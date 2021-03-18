@@ -7,6 +7,7 @@ const dotenv = require('dotenv');
 
 dotenv.config({'path': './.env'});
 
+// routes
 const loginRouter = require('./routes/login');
 
 const app = express();
@@ -21,6 +22,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//DB connection
+require("./database/connection")
+
+// listen on routes
 app.use('/login', loginRouter);
 
 // catch 404 and forward to error handler
