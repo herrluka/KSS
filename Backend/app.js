@@ -8,7 +8,7 @@ const dotenv = require('dotenv');
 dotenv.config({'path': './.env'});
 
 // routes
-const loginRouter = require('./routes/login');
+const loginRouter = require('./routes/auth');
 
 const app = express();
 
@@ -23,10 +23,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //DB connection
-require("./database/connection")
+require("./database/connection");
+
 
 // listen on routes
-app.use('/login', loginRouter);
+app.use('/auth', loginRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -35,13 +36,16 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = process.env.NODE_ENV === 'DEVELOPMENT' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  if (! err) {
+    return next();
+  }
+  console.log(err)
+  res.status(500);
+  res.send({
+    content: 'Internal server error'
+  });
 });
+
+
 
 module.exports = app;
