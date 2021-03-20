@@ -11,9 +11,13 @@ module.exports = (req, res, next) => {
     jwt.verify(token, process.env.JWT_SECRET_KEY, (err, result) => {
         if (err) {
             return res.status(401).json({
-                content: 'Token not valid'
+                content: {
+                    message: 'Token not valid'
+                }
             })
         } else {
+            req.userId = result.id;
+            req.admin = result.admin;
             next();
         }
     });

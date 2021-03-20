@@ -31,7 +31,10 @@ app.use('/auth', loginRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+  res.status(404);
+  res.send({
+    content: 'Not found'
+  });
 });
 
 // error handler
@@ -39,7 +42,7 @@ app.use(function(err, req, res, next) {
   if (! err) {
     return next();
   }
-  console.log(err)
+  console.log(err);
   res.status(500);
   res.send({
     content: 'Internal server error'
