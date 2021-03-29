@@ -40,7 +40,7 @@ router.post('/login',
     if(user){
         bcrypt.compare(req.body.password, user.lozinka).then(result => {
             if (result) {
-                const token = jwt.sign({id: user.id, admin: user.admin}, process.env.JWT_SECRET_KEY, {
+                const token = jwt.sign({id: user.id, role: user.uloga}, process.env.JWT_SECRET_KEY, {
                     expiresIn: process.env.JWT_EXPIRE_TIME
                 });
 
@@ -73,7 +73,7 @@ router.post('/register',
     body('last_name').exists(),
     body('username').exists(),
     body('password').exists(),
-    body('admin').exists(),
+    body('role').exists(),
     auth,
     isAdmin,
     asyncHandler(async (req, res) => {
@@ -92,9 +92,9 @@ router.post('/register',
             prezime: req.body.last_name,
             korisnicko_ime: req.body.username,
             lozinka: password,
-            admin: req.body.admin ? 1 : 0
-        }).then(res => {
-            res.send({
+            uloga: req.body.role
+        }).then(result => {
+            return res.status(201).json({
                 content: {
                     message: "OK"
                 }
@@ -107,6 +107,7 @@ router.post('/register',
                     }
                 })
             }
+            console.log(e)
             console.log('[/register]' + new Date().toISOString() + ' DB unavailable');
             return res.status(400).json({
                 content: {

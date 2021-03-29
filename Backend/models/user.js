@@ -18,7 +18,7 @@ const User = global.sequelize.define('Korisnik', {
     lozinka: {
         type: DataTypes.STRING
     },
-    admin: {
+    uloga: {
         type: DataTypes.BOOLEAN
     }
     },{

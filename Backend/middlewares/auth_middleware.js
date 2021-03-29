@@ -17,7 +17,7 @@ module.exports = (req, res, next) => {
             })
         } else {
             req.userId = result.id;
-            req.admin = result.admin;
+            req.role = result.role;
             next();
         }
     });
