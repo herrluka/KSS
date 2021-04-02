@@ -9,6 +9,7 @@ dotenv.config({'path': './.env'});
 
 // routes
 const loginRouter = require('./routes/auth');
+const refereeRouter = require('./routes/referee');
 
 const app = express();
 
@@ -28,6 +29,7 @@ require("./database/connection");
 
 // listen on routes
 app.use('/auth', loginRouter);
+app.use('/referees', refereeRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -24,6 +24,6 @@ const Referee = sequelize.define('Sudija', {
     timestamps: false,
 });
 
-Referee.belongsTo(League, {foreignKey : "najvisa_liga"});
+Referee.belongsTo(League, {foreignKey : "najvisa_liga", as: 'liga'});
 
 module.exports = Referee;

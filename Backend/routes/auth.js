@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt');
 const {body, validationResult} = require('express-validator');
 const auth = require('../middlewares/auth_middleware');
 const isAdmin = require('../middlewares/role_middleware');
+const handleDBError = require('../help/db_error_handler');
 
 router.post('/login',
     body('username').exists(),
@@ -29,12 +30,7 @@ router.post('/login',
              }
          });
     } catch (error) {
-        console.log('[/register]' + new Date().toISOString() + ' DB unavailable');
-        return res.status(400).json({
-            content: {
-                message: "DB unavailable"
-            }
-        })
+        return handleDBError(res, error);
     }
 
     if(user){
@@ -99,21 +95,16 @@ router.post('/register',
                     message: "OK"
                 }
             });
-        }).catch(e => {
-            if (e.parent.code === 'ER_DUP_ENTRY'){
+        }).catch(error => {
+            if (error.parent.code === 'ER_DUP_ENTRY'){
                 return res.status(400).json({
                     content: {
                         message: 'Username already exists'
                     }
                 })
+            } else {
+                return handleDBError(res, error)
             }
-            console.log(e)
-            console.log('[/register]' + new Date().toISOString() + ' DB unavailable');
-            return res.status(400).json({
-                content: {
-                    message: "DB unavailable"
-                }
-            })
         });
 }));
 
