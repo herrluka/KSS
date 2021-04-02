@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Club = require('../models/club');
+const Participation = require('../models/player_plays_in');
+const Player = require('../models/player');
 const authenticationMiddleware = require('../middlewares/auth_middleware');
 const authorizationMiddleware = require('../middlewares/role_middleware');
 const {body, validationResult} = require('express-validator');
@@ -17,6 +19,27 @@ router.get('/', (req, res) => {
         return handleDBError(res, error);
     })
 });
+
+router.get('/:clubId/players',
+    authenticationMiddleware,
+    authorizationMiddleware, (req, res) => {
+        Participation.findAll({
+            attributes: ['id', 'datum_angazovanja'],
+            where: {
+                klub_id: req.params.clubId
+            },
+            include: {
+                model: Player,
+                as: 'igrac'
+            }
+        }).then(participations => {
+            return res.status(200).json({
+                content: participations
+            })
+        }).catch(error => {
+            return handleDBError(res, error);
+        })
+    });
 
 router.get('/:clubId',
     authenticationMiddleware,

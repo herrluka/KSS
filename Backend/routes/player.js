@@ -1,33 +1,118 @@
 const express = require('express');
 const router = express.Router();
 const Player = require('../models/player');
+const Club = require('../models/club');
+const Participation = require('../models/player_plays_in');
 const authenticationMiddleware = require('../middlewares/auth_middleware');
 const authorizationMiddleware = require('../middlewares/role_middleware');
 const {body, validationResult} = require('express-validator');
 const handleDBError = require('../help/db_error_handler');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
+
+router.get('',
+    authenticationMiddleware,
+    authorizationMiddleware,
+    (req, res) => {
+        const searchKey = req.query.playerName;
+        if (searchKey) {
+            Player.findAll({
+                attributes: ['id', 'ime', 'prezime'],
+                where: {
+                    ime: {
+                        [Op.like]: '%' + searchKey + "%"
+                    }
+                }
+            }).then(players => {
+                return res.status(200).json({
+                    content: players
+                })
+            }).catch(error => {
+                handleDBError(res, error)
+            })
+        } else {
+            Player.findAll({
+                attributes: ['id', 'ime', 'prezime'],
+            }).then(players => {
+                return res.status(200).json({
+                    content: players
+                })
+            }).catch(error => {
+                handleDBError(res, error)
+            })
+        }
+    });
 
 router.get('/:playerId',
     authenticationMiddleware,
     authorizationMiddleware, (req, res) => {
-        Player.findOne({
-            where: {
-                id: req.params.playerId
+    Participation.findAll({
+        attributes: ['datum_angazovanja'],
+        where: {
+            igrac_id: req.params.playerId
+        },
+        include: [
+            {
+                model: Player,
+                as: 'igrac',
+                attributes: ['ime', 'prezime']
+            },
+            {
+                model: Club,
+                as: 'klub',
+                attributes: ['naziv_kluba']
             }
-        }).then(player => {
-            if (!player) {
-                return res.status(404).json({
-                    content: {
-                        message: 'Player with sent id not found'
-                    }
+        ]
+    }).then(participations => {
+        if (participations.length > 0) {
+            let responseBody = {};
+            responseBody.igrac = {
+                ime: participations[0].igrac.ime,
+                prezime: participations[0].igrac.prezime
+            };
+            responseBody.klubovi = [];
+            participations.forEach(participation => {
+                responseBody.klubovi.push({
+                    id: participation.klub.id,
+                    naziv_kluba: participation.klub.naziv_kluba
                 })
-            }
+            });
             return res.status(200).json({
-                content: player
+                content: responseBody
             })
-        }).catch(error => {
-            return handleDBError(res, error);
+        } else {
+            Player.findOne({
+                where: {
+                    id: req.params.playerId
+                }
+            }).then(player => {
+                if (!player) {
+                    return res.status(404).json({
+                        content: {
+                            message: 'Player with sent id not found'
+                        }
+                    })
+                }
+                let responseBody = {};
+                responseBody.igrac = {
+                    'ime': player.ime,
+                    'prezime': player.prezime
+                };
+                responseBody.klubovi = [];
+                return res.status(200).json({
+                    content: responseBody
+                })
+            }).catch(error => {
+                return handleDBError(res, error);
+            })
+        }
+        return res.status(200).json({
+            content: responseBody
         })
+    }).catch(error => {
+        return handleDBError(res, error);
     });
+});
 
 router.post('/',
     body('name').exists(),
