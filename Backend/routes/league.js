@@ -1,15 +1,27 @@
 const express = require('express');
 const router = express.Router();
-const Contract = require('../models/player_plays_in');
+const League = require('../models/league');
 const authenticationMiddleware = require('../middlewares/auth_middleware');
 const authorizationMiddleware = require('../middlewares/role_middleware');
 const {body, validationResult} = require('express-validator');
 const handleDBError = require('../help/db_error_handler');
 
+router.get('',
+    (req, res) => {
+        League.findAll({
+            attributes: ['id', 'naziv_lige']
+        }).then(leagues => {
+            return res.status(200).json({
+                content: leagues
+            })
+        }).catch(error => {
+            return handleDBError(res, error);
+        })
+    });
+
 router.post('',
-    body('contract_date').exists(),
-    body('club_id').exists(),
-    body('player_id').exists(),
+    body('name').exists(),
+    body("rank").isInt(),
     authenticationMiddleware,
     authorizationMiddleware,
     (req, res) => {
@@ -21,10 +33,9 @@ router.post('',
                 }
             })
         }
-        Contract.create({
-            datum_angazovanja: req.body.contract_date,
-            klub_id: req.body.club_id,
-            player_id: req.body.player_id
+        League.create({
+            naziv_lige: req.body.name,
+            igrac_id: req.body.player_id
         }).then(success => {
             return res.status(201).json({
                 content: {
@@ -36,9 +47,9 @@ router.post('',
         })
     });
 
-router.patch('/:contractId',
-    body('club_id').exists(),
-    body('contract_date').exists(),
+router.put('/:leagueId',
+    body('name').exists(),
+    body("rank").isInt(),
     authenticationMiddleware,
     authorizationMiddleware,
     (req, res) => {
@@ -50,14 +61,21 @@ router.patch('/:contractId',
                 }
             })
         }
-        Contract.findOne({
+        League.findOne({
             where: {
-                id: req.params.contractId
+                id: req.params.leagueId
             }
-        }).then(contract => {
-            contract.update({
-                klub_id: req.body.clubId,
-                datum_angazovanja: req.body.contract_date
+        }).then(league => {
+            if (!league) {
+                return res.status(404).json({
+                    content: {
+                        message: 'League with sent id not found'
+                    }
+                })
+            }
+            league.update({
+                naziv_lige: req.body.name,
+                rang: req.body.rank
             }).then(success => {
                 return res.status(204).json({
                     content: {
@@ -70,25 +88,22 @@ router.patch('/:contractId',
         }).catch(error => {
             return handleDBError(res, error);
         })
-});
-
-router.delete('/:contractID',
-    authenticationMiddleware,
-    authorizationMiddleware,
-    (req, res) => {
-        Contract.destory({
-            where: {
-                id: req.params.contractId
-            }
-        }).then(success => {
-            return res.status(200).json({
-                content: {
-                    message: 'OK'
-                }
-            })
-        }).catch(error => {
-            return handleDBError(res, error);
-        })
     });
+
+router.delete('/:leagueId', authenticationMiddleware, authorizationMiddleware, (req, res) => {
+    League.destroy({
+        where: {
+            id: req.params.leagueId
+        }
+    }).then(success => {
+        return res.status(200).json({
+            content: {
+                message: 'OK'
+            }
+        })
+    }).catch(error => {
+        return handleDBError(res, error);
+    })
+});
 
 module.exports = router;
