@@ -1,4 +1,3 @@
-const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -12,6 +11,7 @@ const loginRouter = require('./routes/auth');
 const refereeRouter = require('./routes/referee');
 const clubRouter = require('./routes/club');
 const playersRouter = require('./routes/player');
+const userRouter = require('./routes/user');
 
 const app = express();
 
@@ -28,12 +28,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 //DB connection
 require("./database/connection");
 
-
 // listen on routes
 app.use('/auth', loginRouter);
 app.use('/referees', refereeRouter);
 app.use('/clubs', clubRouter);
 app.use('/players', playersRouter);
+app.use('/users', userRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -54,7 +54,5 @@ app.use(function(err, req, res, next) {
     content: 'Internal server error'
   });
 });
-
-
 
 module.exports = app;

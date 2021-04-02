@@ -53,7 +53,7 @@ router.post('/',
         if (!errors.isEmpty()) {
             return res.status(422).json({
                 content: {
-                    message: 'Bad body request'
+                    message: 'Bad request body'
                 }
             })
         }
@@ -85,7 +85,7 @@ router.put('/:clubId',
         if (!errors.isEmpty()) {
             return res.status(422).json({
                 content: {
-                    message: 'Bad body request'
+                    message: 'Bad request body'
                 }
             })
         }

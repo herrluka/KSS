@@ -17,7 +17,7 @@ router.post('/login',
     if (!errors.isEmpty()) {
         return res.status(422).json({
             content: {
-                message: 'Bad body request'
+                message: 'Bad request body'
             }
         })
     }
@@ -77,7 +77,7 @@ router.post('/register',
         if (!errors.isEmpty()) {
             return res.status(422).json({
                 content: {
-                    message: 'Bad body request'
+                    message: 'Bad request body'
                 }
             })
         }
@@ -107,5 +107,71 @@ router.post('/register',
             }
         });
 }));
+
+router.patch('/change-password/:userId',
+    body('password').exists(),
+    auth,
+    isAdmin,
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({
+                content: {
+                    message: 'Bad request body'
+                }
+            })
+        }
+
+        User.findOne({
+            where: {
+                id: req.params.userId
+            }
+        }).then(user => {
+            if (!user) {
+                return res.status(404).json({
+                    content: {
+                        message: 'User with sent id not found'
+                    }
+                })
+            }
+            bcrypt.hash(req.body.password, parseInt(process.env.BCRYPT_SALT)).then(password => {
+                    console.log('NAKON');
+                    user.update({
+                        lozinka: password
+                    }).then(success => {
+                        return res.status(204).json({
+                            content: {
+                                message: "OK"
+                            }
+                        });
+                    }).catch(error => {
+                        return handleDBError(res, error);
+                    })
+            }).catch(error => {
+                return handleDBError(res, error);
+            });
+        }).catch(error => {
+            return handleDBError(res, error)
+        });
+    });
+
+router.delete('/unregister/:userId',
+    auth,
+    isAdmin,
+    asyncHandler(async (req, res) => {
+        User.destroy({
+            where: {
+                id: req.params.userId
+            }
+        }).then(user => {
+            return res.status(200).json({
+                content: {
+                    message: "OK"
+                }
+            });
+        }).catch(error => {
+            return handleDBError(res, error)
+        });
+    }));
 
 module.exports = router;
