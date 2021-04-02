@@ -1,6 +1,6 @@
 function handleDBError(res, error) {
     if (error.parent.code === 'ETIMEDOUT'){
-        console.log('[/register]' + new Date().toISOString() + ' DB timeout');
+        console.log(new Date().toISOString() + ' DB timeout');
         return res.status(400).json({
             content: {
                 message: "DB timeout"

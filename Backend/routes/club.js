@@ -1,63 +1,51 @@
 const express = require('express');
 const router = express.Router();
-const Referee = require('../models/referee');
-const League = require('../models/league');
+const Club = require('../models/club');
 const authenticationMiddleware = require('../middlewares/auth_middleware');
 const authorizationMiddleware = require('../middlewares/role_middleware');
 const {body, validationResult} = require('express-validator');
 const handleDBError = require('../help/db_error_handler');
 
 router.get('/', (req, res) => {
-    Referee.findAll({
-        attributes: ['ime', 'prezime'],
-        include: {
-            model: League,
-            as: 'liga',
-            attributes: ['naziv_lige']
-        }
-    }).then(referees => {
+    Club.findAll({
+        attributes: ['naziv_kluba', 'godina_osnivanja', 'adresa_kluba'],
+    }).then(clubs => {
         return res.status(200).json({
-            content: referees
+            content: clubs
         })
     }).catch(error => {
         return handleDBError(res, error);
     })
 });
 
-router.get('/:refereeId',
+router.get('/:clubId',
     authenticationMiddleware,
     authorizationMiddleware, (req, res) => {
-    Referee.findOne({
-        include: {
-            model: League,
-            as: 'liga',
-            attributes: ['naziv_lige']
-        },
-        where: {
-            id: req.params.refereeId
-        }
-    }).then(referee => {
-        if (!referee) {
-            return res.status(404).json({
-                content: {
-                    message: 'Referee with sent id not found'
-                }
+        Club.findOne({
+            where: {
+                id: req.params.clubId
+            }
+        }).then(club => {
+            if (!club) {
+                return res.status(404).json({
+                    content: {
+                        message: 'Club with sent id not found'
+                    }
+                })
+            }
+            return res.status(200).json({
+                content: club
             })
-        }
-        return res.status(200).json({
-            content: referee
+        }).catch(error => {
+            return handleDBError(res, error);
         })
-    }).catch(error => {
-        return handleDBError(res, error);
-    })
-});
+    });
 
 router.post('/',
     body('name').exists(),
-    body('surname').exists(),
+    body('foundation_year').exists(),
     body('address').exists(),
     body('phone_number').exists(),
-    body('league_id').exists(),
     authenticationMiddleware,
     authorizationMiddleware,
     (req, res) => {
@@ -69,12 +57,11 @@ router.post('/',
                 }
             })
         }
-        Referee.create({
-            ime: req.body.name,
-            prezime: req.body.surname,
-            adresa: req.body.address,
+        Club.create({
+            naziv_kluba: req.body.name,
+            godina_osnivanja: req.body.foundation_year,
+            adresa_kluba: req.body.address,
             broj_telefona: req.body.phone_number,
-            najvisa_liga: req.body.league_id
         }).then(success => {
             return res.status(201).json({
                 content: {
@@ -82,23 +69,15 @@ router.post('/',
                 }
             })
         }).catch(error => {
-            if (error.parent.errno === 1452){
-                return res.status(400).json({
-                    content: {
-                        message: 'League that you have selected does not exist'
-                    }
-                })
-            }
             return handleDBError(res, error);
         })
-});
+    });
 
-router.put('/:refereeId',
+router.put('/:clubId',
     body('name').exists(),
-    body('surname').exists(),
+    body('foundation_year').exists(),
     body('address').exists(),
     body('phone_number').exists(),
-    body('league_id').exists(),
     authenticationMiddleware,
     authorizationMiddleware,
     (req, res) => {
@@ -110,24 +89,23 @@ router.put('/:refereeId',
                 }
             })
         }
-        Referee.findOne({
+        Club.findOne({
             where: {
-                id: req.params.refereeId
+                id: req.params.clubId
             }
-        }).then(referee => {
-            if (!referee) {
+        }).then(club => {
+            if (!club) {
                 return res.status(404).json({
                     content: {
-                        message: 'Referee with sent id not found'
+                        message: 'Club with sent id not found'
                     }
                 })
             }
-            referee.update({
-                ime: req.body.name,
-                prezime: req.body.surname,
-                adresa: req.body.address,
+            club.update({
+                naziv_kluba: req.body.name,
+                godina_osnivanja: req.body.foundation_year,
+                adresa_kluba: req.body.address,
                 broj_telefona: req.body.phone_number,
-                najvisa_liga: req.body.league_id
             }).then(success => {
                 return res.status(204).json();
             }).catch(error => {
@@ -138,25 +116,25 @@ router.put('/:refereeId',
         });
     });
 
-router.delete('/:refereeId',
+router.delete('/:clubId',
     authenticationMiddleware,
     authorizationMiddleware,
     (req, res) => {
-        Referee.findOne({
+        Club.findOne({
             where: {
-                id: req.params.refereeId
+                id: req.params.clubId
             }
-        }).then(referee => {
-            if (!referee) {
+        }).then(club => {
+            if (!club) {
                 return res.status(404).json({
                     content: {
-                        message: 'Referee with sent id not found'
+                        message: 'Club with sent id not found'
                     }
                 })
             }
-            referee.destroy({
+            club.destroy({
                 where: {
-                    id: req.params.refereeId
+                    id: req.params.clubId
                 }
             }).then(success => {
                 return res.status(200).json({
