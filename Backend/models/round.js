@@ -1,6 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require("../database/connection");
-const League = require("../models/league")
+const League = require("../models/league");
 
 const Round = sequelize.define('Kolo', {
         id:  {
