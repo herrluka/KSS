@@ -16,6 +16,6 @@ const Round = sequelize.define('Kolo', {
         timestamps: false,
     });
 
-Round.belongsTo(League, {foreignKey: "liga_id"})
+Round.belongsTo(League, {foreignKey: "liga_id", as: 'liga'});
 
 module.exports = Round;

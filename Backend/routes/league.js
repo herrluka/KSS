@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const League = require('../models/league');
+const Round = require('../models/round');
 const authenticationMiddleware = require('../middlewares/auth_middleware');
 const authorizationMiddleware = require('../middlewares/role_middleware');
 const {body, validationResult} = require('express-validator');
@@ -13,6 +14,42 @@ router.get('',
         }).then(leagues => {
             return res.status(200).json({
                 content: leagues
+            })
+        }).catch(error => {
+            return handleDBError(res, error);
+        })
+    });
+
+router.get('/:leagueId/rounds',
+    (req, res) => {
+        Round.findAll({
+            include: [
+                {
+                    model: League,
+                    as: 'liga'
+                }
+            ],
+            where: {
+                liga_id: req.params.leagueId
+            },
+            order: ['datum_od']
+        }).then(rounds => {
+            let responseBody = {};
+            responseBody.liga = {
+                liga_id: rounds[0].liga.id,
+                naziv_lige: rounds[0].liga.naziv_lige
+            };
+            responseBody.kola = [];
+            rounds.forEach(round => {
+               responseBody.kola.push({
+                   id: round.id,
+                   naziv: round.naziv,
+                   datum_od: round.datum_od,
+                   datum_do: round.datum_do
+               });
+            });
+            return res.status(200).json({
+                content: responseBody
             })
         }).catch(error => {
             return handleDBError(res, error);
