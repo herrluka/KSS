@@ -11,6 +11,7 @@ dotenv.config({'path': './.env'});
 const loginRouter = require('./routes/auth');
 const refereeRouter = require('./routes/referee');
 const clubRouter = require('./routes/club');
+const playersRouter = require('./routes/player');
 
 const app = express();
 
@@ -32,6 +33,7 @@ require("./database/connection");
 app.use('/auth', loginRouter);
 app.use('/referees', refereeRouter);
 app.use('/clubs', clubRouter);
+app.use('/players', playersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
