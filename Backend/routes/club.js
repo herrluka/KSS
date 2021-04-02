@@ -120,33 +120,18 @@ router.delete('/:clubId',
     authenticationMiddleware,
     authorizationMiddleware,
     (req, res) => {
-        Club.findOne({
+        Club.destroy({
             where: {
                 id: req.params.clubId
             }
-        }).then(club => {
-            if (!club) {
-                return res.status(404).json({
-                    content: {
-                        message: 'Club with sent id not found'
-                    }
-                })
-            }
-            club.destroy({
-                where: {
-                    id: req.params.clubId
+        }).then(success => {
+            return res.status(200).json({
+                content: {
+                    message: 'OK'
                 }
-            }).then(success => {
-                return res.status(200).json({
-                    content: {
-                        message: 'OK'
-                    }
-                });
-            }).catch(error => {
-                return handleDBError(res, error);
             });
-        }).catch(error =>{
-            return handleDBError(error);
+        }).catch(error => {
+            return handleDBError(res, error);
         });
     });
 

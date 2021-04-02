@@ -142,34 +142,20 @@ router.delete('/:refereeId',
     authenticationMiddleware,
     authorizationMiddleware,
     (req, res) => {
-        Referee.findOne({
+        Referee.destroy({
             where: {
                 id: req.params.refereeId
             }
-        }).then(referee => {
-            if (!referee) {
-                return res.status(404).json({
-                    content: {
-                        message: 'Referee with sent id not found'
-                    }
-                })
-            }
-            referee.destroy({
-                where: {
-                    id: req.params.refereeId
+        }).then(success => {
+            return res.status(200).json({
+                content: {
+                    message: 'OK'
                 }
-            }).then(success => {
-                return res.status(200).json({
-                    content: {
-                        message: 'OK'
-                    }
-                });
-            }).catch(error => {
-                return handleDBError(res, error);
             });
-        }).catch(error =>{
-            return handleDBError(error);
+        }).catch(error => {
+            return handleDBError(res, error);
         });
+
     });
 
 module.exports = router;
