@@ -10,8 +10,8 @@ const Match = sequelize.define('Utakmica', {
         type: DataTypes.INTEGER,
         primaryKey: true
     },
-    tim_A_golova: DataTypes.STRING,
-    tim_B_golova: DataTypes.STRING,
+    tim_A_koseva: DataTypes.STRING,
+    tim_B_koseva: DataTypes.STRING,
     datum_odrzavanja: DataTypes.DATE,
     odlozeno: DataTypes.BOOLEAN,
     zavrseno: DataTypes.BOOLEAN,

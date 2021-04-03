@@ -4,7 +4,7 @@ const Player = require('../models/player');
 const Club = require('../models/club');
 const Participation = require('../models/player_plays_in');
 const authenticationMiddleware = require('../middlewares/auth_middleware');
-const authorizationMiddleware = require('../middlewares/role_middleware');
+const isAdmin = require('../middlewares/role_middleware');
 const {body, validationResult} = require('express-validator');
 const handleDBError = require('../help/db_error_handler');
 const Sequelize = require('sequelize');
@@ -12,7 +12,7 @@ const Op = Sequelize.Op;
 
 router.get('',
     authenticationMiddleware,
-    authorizationMiddleware,
+    isAdmin,
     (req, res) => {
         const searchKey = req.query.playerName;
         if (searchKey) {
@@ -45,7 +45,7 @@ router.get('',
 
 router.get('/:playerId',
     authenticationMiddleware,
-    authorizationMiddleware, (req, res) => {
+    isAdmin, (req, res) => {
     Participation.findAll({
         attributes: ['datum_angazovanja'],
         where: {
@@ -120,7 +120,7 @@ router.post('/',
     body('birth_date').exists(),
     body('medical_examination').exists(),
     authenticationMiddleware,
-    authorizationMiddleware,
+    isAdmin,
     (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -152,7 +152,7 @@ router.put('/:playerId',
     body('birth_date').exists(),
     body('medical_examination').exists(),
     authenticationMiddleware,
-    authorizationMiddleware,
+    isAdmin,
     (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -191,7 +191,7 @@ router.put('/:playerId',
 
 router.delete('/:playerId',
     authenticationMiddleware,
-    authorizationMiddleware,
+    isAdmin,
     (req, res) => {
         Player.destroy({
             where: {

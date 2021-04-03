@@ -4,7 +4,7 @@ const Club = require('../models/club');
 const Participation = require('../models/player_plays_in');
 const Player = require('../models/player');
 const authenticationMiddleware = require('../middlewares/auth_middleware');
-const authorizationMiddleware = require('../middlewares/role_middleware');
+const isAdmin = require('../middlewares/role_middleware');
 const {body, validationResult} = require('express-validator');
 const handleDBError = require('../help/db_error_handler');
 
@@ -22,7 +22,7 @@ router.get('/', (req, res) => {
 
 router.get('/:clubId/players',
     authenticationMiddleware,
-    authorizationMiddleware, (req, res) => {
+    isAdmin, (req, res) => {
         Participation.findAll({
             attributes: ['id', 'datum_angazovanja'],
             where: {
@@ -43,7 +43,7 @@ router.get('/:clubId/players',
 
 router.get('/:clubId',
     authenticationMiddleware,
-    authorizationMiddleware, (req, res) => {
+    isAdmin, (req, res) => {
         Club.findOne({
             where: {
                 id: req.params.clubId
@@ -70,7 +70,7 @@ router.post('/',
     body('address').exists(),
     body('phone_number').exists(),
     authenticationMiddleware,
-    authorizationMiddleware,
+    isAdmin,
     (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -102,7 +102,7 @@ router.put('/:clubId',
     body('address').exists(),
     body('phone_number').exists(),
     authenticationMiddleware,
-    authorizationMiddleware,
+    isAdmin,
     (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -141,7 +141,7 @@ router.put('/:clubId',
 
 router.delete('/:clubId',
     authenticationMiddleware,
-    authorizationMiddleware,
+    isAdmin,
     (req, res) => {
         Club.destroy({
             where: {

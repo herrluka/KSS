@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const authenticationMiddleware = require('../middlewares/auth_middleware');
-const authorizationMiddleware = require('../middlewares/role_middleware');
+const isAdmin = require('../middlewares/role_middleware');
 const handleDBError = require('../help/db_error_handler');
 
 router.get('/',
     authenticationMiddleware,
-    authorizationMiddleware,
+    isAdmin,
     (req, res) => {
         User.findAll({
             attributes : ['id', 'ime', 'prezime', 'uloga']

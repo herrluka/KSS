@@ -3,7 +3,7 @@ const router = express.Router();
 const League = require('../models/league');
 const Round = require('../models/round');
 const authenticationMiddleware = require('../middlewares/auth_middleware');
-const authorizationMiddleware = require('../middlewares/role_middleware');
+const isAdmin = require('../middlewares/role_middleware');
 const {body, validationResult} = require('express-validator');
 const handleDBError = require('../help/db_error_handler');
 
@@ -60,7 +60,7 @@ router.post('',
     body('name').exists(),
     body("rank").isInt(),
     authenticationMiddleware,
-    authorizationMiddleware,
+    isAdmin,
     (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -88,7 +88,7 @@ router.put('/:leagueId',
     body('name').exists(),
     body("rank").isInt(),
     authenticationMiddleware,
-    authorizationMiddleware,
+    isAdmin,
     (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -127,7 +127,9 @@ router.put('/:leagueId',
         })
     });
 
-router.delete('/:leagueId', authenticationMiddleware, authorizationMiddleware, (req, res) => {
+router.delete('/:leagueId',
+    authenticationMiddleware,
+    isAdmin, (req, res) => {
     League.destroy({
         where: {
             id: req.params.leagueId
