@@ -24,8 +24,9 @@ router.post('',
         Contract.create({
             datum_angazovanja: req.body.contract_date,
             klub_id: req.body.club_id,
-            player_id: req.body.player_id
+            igrac_id: req.body.player_id
         }).then(success => {
+            console.log(success);
             return res.status(201).json({
                 content: {
                     message: 'OK'
@@ -72,11 +73,11 @@ router.patch('/:contractId',
         })
 });
 
-router.delete('/:contractID',
+router.delete('/:contractId',
     authenticationMiddleware,
     isAdmin,
     (req, res) => {
-        Contract.destory({
+        Contract.destroy({
             where: {
                 id: req.params.contractId
             }
