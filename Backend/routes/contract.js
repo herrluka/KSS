@@ -26,13 +26,25 @@ router.post('',
             klub_id: req.body.club_id,
             igrac_id: req.body.player_id
         }).then(success => {
-            console.log(success);
             return res.status(201).json({
                 content: {
                     message: 'OK'
                 }
             })
         }).catch(error => {
+            if (error.parent.errno === 1452){
+                return res.status(400).json({
+                    content: {
+                        message: 'Bad club or player id provided.'
+                    }
+                })
+            } else if (error.parent.errno === 1644) {
+                return res.status(400).json({
+                    content: {
+                        message: 'Player who is younger than 18 years cannot be registered for more than one club.'
+                    }
+                })
+            }
             return handleDBError(res, error);
         })
     });
@@ -66,6 +78,19 @@ router.patch('/:contractId',
                     }
                 })
             }).catch(error => {
+                if (error.parent.errno === 1452){
+                    return res.status(400).json({
+                        content: {
+                            message: 'Bad club or player id provided.'
+                        }
+                    })
+                } else if (error.parent.errno === 1644) {
+                    return res.status(400).json({
+                        content: {
+                            message: 'Player who is younger than 18 years cannot be registered for more than one club.'
+                        }
+                    })
+                }
                 return handleDBError(res, error);
             })
         }).catch(error => {

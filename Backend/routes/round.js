@@ -125,6 +125,13 @@ router.post('',
                 }
             })
         }).catch(error => {
+            if (error.parent.errno === 1452){
+                return res.status(400).json({
+                    content: {
+                        message: 'League that you have selected does not exist'
+                    }
+                })
+            }
             return handleDBError(res, error);
         })
     });
@@ -162,6 +169,13 @@ router.put('/:roundId',
                     }
                 })
             }).catch(error => {
+                if (error.parent.errno === 1452){
+                    return res.status(400).json({
+                        content: {
+                            message: 'League that you have selected does not exist'
+                        }
+                    })
+                }
                 return handleDBError(res, error);
             })
         }).catch(error => {

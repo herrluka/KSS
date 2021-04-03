@@ -96,7 +96,7 @@ router.post('/register',
                 }
             });
         }).catch(error => {
-            if (error.parent.code === 'ER_DUP_ENTRY'){
+            if (error?.parent.code === 'ER_DUP_ENTRY'){
                 return res.status(400).json({
                     content: {
                         message: 'Username already exists'

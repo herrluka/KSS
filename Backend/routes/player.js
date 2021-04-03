@@ -106,9 +106,6 @@ router.get('/:playerId',
                 return handleDBError(res, error);
             })
         }
-        return res.status(200).json({
-            content: responseBody
-        })
     }).catch(error => {
         return handleDBError(res, error);
     });
@@ -182,6 +179,13 @@ router.put('/:playerId',
             }).then(success => {
                 return res.status(204).json();
             }).catch(error => {
+                if (error.parent.errno === 1644) {
+                    return res.status(400).json({
+                        content: {
+                            message: 'Player is registered for 2 or more clubs, so he has to have more than 18 years.'
+                        }
+                    })
+                }
                 return handleDBError(res, error);
             });
         }).catch(error => {

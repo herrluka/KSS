@@ -59,7 +59,9 @@ app.use(function(err, req, res, next) {
   console.log(err);
   res.status(500);
   res.send({
-    content: 'Internal server error'
+    content: {
+      message: 'Internal server error'
+    }
   });
 });
 

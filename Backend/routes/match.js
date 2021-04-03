@@ -48,6 +48,13 @@ router.post('',
                 }
             })
         }).catch(error => {
+            if (error.parent.errno === 1452){
+                return res.status(400).json({
+                    content: {
+                        message: 'Foreign key error.'
+                    }
+                })
+            }
             return handleDBError(res, error);
         })
     });
@@ -99,6 +106,13 @@ router.put('/:matchId',
                     }
                 })
             }).catch(error => {
+                if (error.parent.errno === 1452){
+                    return res.status(400).json({
+                        content: {
+                            message: 'Foreign key error.'
+                        }
+                    })
+                }
                 return handleDBError(res, error);
             })
         }).catch(error => {
