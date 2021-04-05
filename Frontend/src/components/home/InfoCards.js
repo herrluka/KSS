@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function InfoCards(state) {
     return (
         <div className="container">
@@ -14,7 +16,7 @@ function InfoCards(state) {
                             <li>koji se igraju</li>
                             <li>2021. godine</li>
                         </ul>
-                        <button type="button" className="btn btn-lg btn-block btn-primary">Pogledajte lige</button>
+                        <Link to="/leagues" type="button" className="btn btn-lg btn-block btn-primary">Pogledajte lige</Link>
                     </div>
                 </div>
                 <div className="card mb-4 box-shadow">
@@ -29,7 +31,7 @@ function InfoCards(state) {
                             <li>klubova koji igraju</li>
                             <li>u okviru takmičenja KSS</li>
                         </ul>
-                        <button type="button" className="btn btn-lg btn-block btn-primary">Pogledajte klubove</button>
+                        <Link to="/klubovi" type="button" className="btn btn-lg btn-block btn-primary">Pogledajte klubove</Link>
                     </div>
                 </div>
                 <div className="card mb-4 box-shadow">
@@ -44,7 +46,7 @@ function InfoCards(state) {
                             <li>takmičenja Košarkaškog</li>
                             <li>saveza Srbije</li>
                         </ul>
-                        <button type="button" className="btn btn-lg btn-block btn-primary">Pogledajte igrače</button>
+                        <Link to="/igraci" type="button" className="btn btn-lg btn-block btn-primary">Pogledajte igrače</Link>
                     </div>
                 </div>
             </div>

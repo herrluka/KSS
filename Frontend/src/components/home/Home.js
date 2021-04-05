@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import InfoCards from "./InfoCards";
-import About from "../about/About";
+import About from "../common/about/About";
+import { getAll } from "./HomeService";
 
 function HomePage(props) {
+    useEffect(() => {
+        getAll().then(result => {
+            console.log(result);
+        }).catch(error => {
+            console.log(error);
+        })
+    });
+
     return (
         <div className="position-relative overflow-hidden text-center">
             <div className="col-md-5 p-lg-5 mx-auto my-5">

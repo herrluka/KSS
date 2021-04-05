@@ -1,17 +1,18 @@
 import React from 'react';
 import HomePage from "./components/home/Home";
 import NotFoundPage from "./NotFoundPage";
-import Navbar from "./components/navbar/Navbar";
+import Navbar from "./components/common/navbar/Navbar";
 import { Route, Switch } from "react-router-dom";
 import Login from "./components/login/Login";
 import Register from  "./components/register/Register";
+import League from "./components/league/League";
 
 function App() {
     return (
         <>
         <Navbar />
-
         <Switch>
+            <Route path="/leagues" exact component={League} />
             <Route path="/login" exact component={Login} />
             <Route path="/register" exact component={Register} />
             <Route path="/" exact component={HomePage} />

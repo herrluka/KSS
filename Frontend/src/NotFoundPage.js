@@ -3,12 +3,12 @@ import { Link } from "react-router-dom";
 
 function NotFoundPage() {
     return (
-        <>
-            <h2>Page not found</h2>
+        <div className="text-center h-75 d-flex flex-column justify-content-center">
+            <h1 className="display-3 font-weight-bold">Stranica nije pronađena</h1>
             <p>
-                <Link to="/">Back to home</Link>
+                <Link to="/" type="button" className="btn btn-lg btn-primary mt-5">Nazad na početnu stranu</Link>
             </p>
-        </>
+        </div>
     )
 }
 
