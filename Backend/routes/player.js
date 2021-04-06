@@ -11,8 +11,8 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
 router.get('',
-    authenticationMiddleware,
-    isAdmin,
+    //     authenticationMiddleware,
+    // isAdmin,
     (req, res) => {
         const searchKey = req.query.playerName;
         if (searchKey) {
@@ -32,7 +32,7 @@ router.get('',
             })
         } else {
             Player.findAll({
-                attributes: ['id', 'ime', 'prezime'],
+                attributes: ['id', 'ime', 'prezime', 'datum_rodjenja'],
             }).then(players => {
                 return res.status(200).json({
                     content: players
