@@ -46,7 +46,7 @@ function InfoCards(state) {
                             <li>takmičenja Košarkaškog</li>
                             <li>saveza Srbije</li>
                         </ul>
-                        <Link to="/igraci" type="button" className="btn btn-lg btn-block btn-primary">Pogledajte igrače</Link>
+                        <Link to="/players" type="button" className="btn btn-lg btn-block btn-primary">Pogledajte igrače</Link>
                     </div>
                 </div>
             </div>

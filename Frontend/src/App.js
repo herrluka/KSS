@@ -7,12 +7,14 @@ import Login from "./components/login/Login";
 import Register from  "./components/register/Register";
 import League from "./components/league/League";
 import Players from "./components/players/Players";
+import PlayerInfo from "./components/players/PlayerInfo";
 
 function App() {
     return (
         <>
         <Navbar />
         <Switch>
+            <Route path="/players/:id" exact component={PlayerInfo} />
             <Route path="/players" exact component={Players} />
             <Route path="/leagues" exact component={League} />
             <Route path="/login" exact component={Login} />

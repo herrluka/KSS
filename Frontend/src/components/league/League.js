@@ -4,7 +4,7 @@ import ModalLoader from "../common/ModalLoader";
 import {Link} from "react-router-dom";
 import RetryError from "../common/errors/RetryError";
 
-function League(props) {
+function League(state) {
 
     const [leagues, setLeagues] = useState([]);
     const [loaderActive, setLoaderActive] = useState(true);
