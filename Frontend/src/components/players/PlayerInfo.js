@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState} from 'react';
-import { Link, useParams ,useHistory} from 'react-router-dom';
+import { useEffect, useState} from 'react';
+import { useParams ,useHistory} from 'react-router-dom';
 import ModalLoader from "../common/ModalLoader";
 import RetryError from "../common/errors/RetryError";
 import {deletePlayer, getPlayerById, updatePlayer} from "./PlayerService";
@@ -36,9 +36,9 @@ function PlayerInfo(state) {
     }
 
     function showSuccessAlert() {
-        setSuccessAlertStyle({display: "block", animation: "slideToLeft 2s"});
+        setSuccessAlertStyle({display: "block", animation: "slideToLeft 2s", zIndex: "1300"});
         setTimeout(() => {
-            setSuccessAlertStyle({display: "block", animation: "slideToRight 2s"});
+            setSuccessAlertStyle({display: "block", animation: "slideToRight 2s", zIndex: "1300"});
             setTimeout(() => {
                 setSuccessAlertStyle({display: "none"});
                 setButtonsDisabled(false);
@@ -47,9 +47,9 @@ function PlayerInfo(state) {
     }
 
     function showErrorAlert() {
-        setErrorAlertStyle({display: "block", animation: "slideToLeft 0.5s"});
+        setErrorAlertStyle({display: "block", animation: "slideToLeft 0.5s", zIndex: "1300"});
         setTimeout(() => {
-            setErrorAlertStyle({display: "block", animation: "slideToRight 0.5s"});
+            setErrorAlertStyle({display: "block", animation: "slideToRight 0.5s", zIndex: "1300"});
             setTimeout(() => {
                 setErrorAlertStyle({display: "none"});
                 setButtonsDisabled(false);
@@ -83,7 +83,7 @@ function PlayerInfo(state) {
         });
     }
 
-    const fetchPlayer = useCallback(async () => {
+    function fetchPlayer() {
         setLoaderActive(true);
         setRetryButtonDisplayed(false);
         getPlayerById(params.id).then(response => {
@@ -101,7 +101,7 @@ function PlayerInfo(state) {
         }).finally(() => {
             setLoaderActive(false);
         })
-    }, []);
+    }
 
     useEffect(() => {
         fetchPlayer();
@@ -138,8 +138,8 @@ function PlayerInfo(state) {
                     <button type="button" className="btn btn-danger ml-2" disabled={buttonsDisabled} onClick={() => setDialogShown(!isDialogShown)}>Obriši</button>
                 </form>
             </div>
-            <SuccessAlert alertStyle={successAlertStyle} />
-            <ErrorAlert alertStyle={errorAlertStyle} />
+            <SuccessAlert alertStyle={successAlertStyle} alertText="Igrač je ažuriran" />
+            <ErrorAlert alertStyle={errorAlertStyle} alertText="Igrač nije ažuriran" />
         </>
     )
 }

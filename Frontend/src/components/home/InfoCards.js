@@ -9,7 +9,7 @@ function InfoCards(state) {
                         <h4 className="my-0 font-weight-normal">Lige</h4>
                     </div>
                     <div className="card-body">
-                        <img src={require("../../assets/kls-logo.jpeg").default} width={"100px"} height={"100px"}/>
+                        <img src={require("../../assets/kls-logo.jpeg").default} width={"100px"} height={"100px"} alt="" />
                         <ul className="list-unstyled mt-3 mb-4">
                             <li>Više od 10 liga</li>
                             <li>seniorske košarke</li>
@@ -24,7 +24,7 @@ function InfoCards(state) {
                         <h4 className="my-0 font-weight-normal">Klubovi</h4>
                     </div>
                     <div className="card-body">
-                        <img src={require("../../assets/vosa-logo.png").default} width={"100px"} height={"100px"}/>
+                        <img src={require("../../assets/vosa-logo.png").default} width={"100px"} height={"100px"} alt="" />
                         <ul className="list-unstyled mt-3 mb-4">
                             <li>Više od 20</li>
                             <li>muških i ženskih</li>
@@ -39,7 +39,7 @@ function InfoCards(state) {
                         <h4 className="my-0 font-weight-normal">Igrači</h4>
                     </div>
                     <div className="card-body">
-                        <img src={require("../../assets/jokic.jpg").default} width={"100px"} height={"100px"}/>
+                        <img src={require("../../assets/jokic.jpg").default} width={"100px"} height={"100px"} alt="" />
                         <ul className="list-unstyled mt-3 mb-4">
                             <li>Košarkaši i košarkašice</li>
                             <li>koji nastupaju u okviru</li>

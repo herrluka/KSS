@@ -37,9 +37,9 @@ function Players() {
     }
 
     function showErrorAlert() {
-        setErrorAlertStyle({display: "block", animation: "slideToLeft 0.5s"});
+        setErrorAlertStyle({display: "block", animation: "slideToLeft 0.5s", zIndex: "1300"});
         setTimeout(() => {
-            setErrorAlertStyle({display: "block", animation: "slideToRight 0.5s"});
+            setErrorAlertStyle({display: "block", animation: "slideToRight 0.5s", zIndex: "1300"});
             setTimeout(() => {
                 setErrorAlertStyle({display: "none"});
             }, 500);
@@ -120,8 +120,8 @@ function Players() {
                     </tbody>
                 </table>
             </div>
-            <SuccessAlert alertStyle={successAlertStyle} />
-            <ErrorAlert alertStyle={errorAlertStyle} />
+            <SuccessAlert alertStyle={successAlertStyle} alertText="Igrač je uspešno sačuvan"/>
+            <ErrorAlert alertStyle={errorAlertStyle} alertText="Igrač nije sačuvan" />
         </>
     )
 }
