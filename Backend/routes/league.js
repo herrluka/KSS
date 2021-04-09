@@ -9,9 +9,7 @@ const handleDBError = require('../help/db_error_handler');
 
 router.get('',
     (req, res) => {
-        League.findAll({
-            attributes: ['id', 'naziv_lige']
-        }).then(leagues => {
+        League.findAll().then(leagues => {
             return res.status(200).json({
                 content: leagues
             })
@@ -72,7 +70,7 @@ router.post('',
         }
         League.create({
             naziv_lige: req.body.name,
-            igrac_id: req.body.player_id
+            rang: req.body.rank
         }).then(success => {
             return res.status(201).json({
                 content: {

@@ -43,11 +43,12 @@ router.post('/login',
                 return res.status(200).json({
                     content: {
                         token: token,
-                        name: user.ime
+                        name: user.ime,
+                        role: user.uloga
                     }
                 })
             } else {
-                return res.status(401).json({
+                return res.status(400).json({
                     content: {
                         message: 'Username or password is not correct'
                     }
@@ -56,7 +57,7 @@ router.post('/login',
         });
 
     } else {
-        return res.status(401).json({
+        return res.status(400).json({
             content: {
                 message: 'Username or password is not correct'
             }

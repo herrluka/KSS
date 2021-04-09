@@ -11,8 +11,6 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
 router.get('',
-    //     authenticationMiddleware,
-    // isAdmin,
     (req, res) => {
         const searchKey = req.query.playerName;
         if (searchKey) {
@@ -45,7 +43,8 @@ router.get('',
 
 router.get('/:playerId',
     authenticationMiddleware,
-    isAdmin, (req, res) => {
+    isAdmin,
+    (req, res) => {
     Participation.findAll({
         attributes: ['datum_angazovanja'],
         where: {
@@ -55,7 +54,7 @@ router.get('/:playerId',
             {
                 model: Player,
                 as: 'igrac',
-                attributes: ['ime', 'prezime']
+                attributes: ['ime', 'prezime', 'datum_rodjenja', 'lekarski_pregled_datum']
             },
             {
                 model: Club,
@@ -68,7 +67,9 @@ router.get('/:playerId',
             let responseBody = {};
             responseBody.igrac = {
                 ime: participations[0].igrac.ime,
-                prezime: participations[0].igrac.prezime
+                prezime: participations[0].igrac.prezime,
+                datum_rodjenja: participations[0].igrac.datum_rodjenja,
+                lekarski_pregled_datum: participations[0].igrac.lekarski_pregled_datum,
             };
             responseBody.klubovi = [];
             participations.forEach(participation => {
@@ -96,7 +97,9 @@ router.get('/:playerId',
                 let responseBody = {};
                 responseBody.igrac = {
                     'ime': player.ime,
-                    'prezime': player.prezime
+                    'prezime': player.prezime,
+                    'datum_rodjenja': player.datum_rodjenja,
+                    'lekarski_pregled_datum': player.lekarski_pregled_datum
                 };
                 responseBody.klubovi = [];
                 return res.status(200).json({
