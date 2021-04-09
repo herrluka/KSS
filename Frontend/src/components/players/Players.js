@@ -3,7 +3,7 @@ import Search from "../common/search/Search";
 import PlayerRow from "./PlayerRow";
 import ModalLoader from "../common/loaders/ModalLoader";
 import RetryError from "../common/errors/RetryError";
-import CreateDialog from "../common/dialogs/CreateDialog";
+import CreatePlayerDialog from "./CreatePlayerDialog";
 import {getPlayersByName, insertNewPlayer} from "./PlayerService";
 import {faPlusSquare} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -47,6 +47,7 @@ function Players(props) {
             }, 500);
         }, 3000);
     }
+
     function handleChange(event) {
         setNewPlayer({
             ...newPlayer,
@@ -93,8 +94,8 @@ function Players(props) {
 
     return (
         <>
-            <CreateDialog isDialogShown={isDialogShown} closeDialog={() => setDialogShown(!isDialogShown)} onInputChange={(event) => handleChange(event)}
-                onValidateForm={(event) => saveNewPlayer(event)} player={newPlayer}/>
+            <CreatePlayerDialog isDialogShown={isDialogShown} closeDialog={() => setDialogShown(!isDialogShown)} onInputChange={(event) => handleChange(event)}
+                                onValidateForm={(event) => saveNewPlayer(event)} player={newPlayer}/>
             <ModalLoader isActive={isLoaderActive} />
             <RetryError isActive={retryButtonDisplayed} retry={() => fetchPlayers(searchText)} />
             <Search searchPlayers={(_searchText) => fetchPlayers(_searchText)} />

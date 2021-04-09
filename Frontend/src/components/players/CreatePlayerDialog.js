@@ -1,4 +1,4 @@
-function CreateDialog(state) {
+function CreatePlayerDialog(state) {
     return (
         <>
             <div id="addEmployeeModal" className={"centered w-25 fade show " + (state.isDialogShown?"d-block ":"d-none")} >
@@ -50,4 +50,4 @@ function CreateDialog(state) {
     )
 }
 
-export default CreateDialog;
+export default CreatePlayerDialog;

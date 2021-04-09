@@ -117,7 +117,11 @@ function PlayerInfo(props) {
         if (isContentAvailable) {
             return (
                 <>
-                    <DeleteDialog isDialogShown={isDialogShown} closeDialog={() => setDialogShown(!isDialogShown)} confirmDeletePlayer={() => handleDeletePlayer()} />
+                    <DeleteDialog
+                        whatToDelete="igrača"
+                        isDialogShown={isDialogShown}
+                        closeDialog={() => setDialogShown(!isDialogShown)}
+                        confirmDelete={() => handleDeletePlayer()} />
                     <ModalLoader isActive={isLoaderActive} />
                     <div className="container-fluid pt-5">
                         <RetryError isActive={retryButtonDisplayed} retry={() => fetchPlayer()} />
