@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import Search from "../common/search/Search";
 import PlayerRow from "./PlayerRow";
-import ModalLoader from "../common/ModalLoader";
+import ModalLoader from "../common/loaders/ModalLoader";
 import RetryError from "../common/errors/RetryError";
 import CreateDialog from "../common/dialogs/CreateDialog";
 import {getPlayersByName, insertNewPlayer} from "./PlayerService";
@@ -9,8 +9,10 @@ import {faPlusSquare} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import SuccessAlert from "../alerts/SuccessAlert";
 import ErrorAlert from "../alerts/ErrorAlert";
+import {connect} from "react-redux";
+import roles from "../../constants"
 
-function Players() {
+function Players(props) {
 
     const [searchText, setSearchText] = useState('');
     const [players, setPlayers] = useState([]);
@@ -96,13 +98,13 @@ function Players() {
             <ModalLoader isActive={isLoaderActive} />
             <RetryError isActive={retryButtonDisplayed} retry={() => fetchPlayers(searchText)} />
             <Search searchPlayers={(_searchText) => fetchPlayers(_searchText)} />
-            <div className="mr-5 m-5 text-center">
+            {props.isAdmin?<div className="mr-5 m-5 text-center">
                 <button className="btn btn-success" onClick={() => setDialogShown(!isDialogShown)}>
                 <div className="d-flex">
                     <FontAwesomeIcon className="h4 mr-2 mb-0" icon={faPlusSquare} />Dodaj igrača
                 </div>
                     </button>
-            </div>
+            </div>:null}
             <div className="container-fluid justify-content-center mt-5 text-center w-75">
                 <table className="table">
                     <thead className="bg-primary">
@@ -115,7 +117,7 @@ function Players() {
                     <tbody>
                         {players.map(player => {
                             return <PlayerRow playerId={player.id} playerName={player.ime}
-                                              playerSurname={player.prezime} playerDateOfBirth={player.datum_rodjenja} />
+                                              playerSurname={player.prezime} playerDateOfBirth={player.datum_rodjenja} isAdmin={props.isAdmin} />
                         })}
                     </tbody>
                 </table>
@@ -125,5 +127,10 @@ function Players() {
         </>
     )
 }
+function mapStateToProps(state) {
+    return {
+        isAdmin: state.role === roles.ADMINISTRATOR
+    }
+}
 
-export default Players;
+export default connect(mapStateToProps)(Players);

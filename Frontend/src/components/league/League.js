@@ -1,10 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import { getAll } from "../home/HomeService";
-import ModalLoader from "../common/ModalLoader";
+import ModalLoader from "../common/loaders/ModalLoader";
 import {Link} from "react-router-dom";
 import RetryError from "../common/errors/RetryError";
 
-function League(state) {
+function League(props) {
 
     const [leagues, setLeagues] = useState([]);
     const [loaderActive, setLoaderActive] = useState(true);

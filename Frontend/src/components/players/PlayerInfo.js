@@ -1,14 +1,16 @@
 import { useEffect, useState} from 'react';
-import { useParams ,useHistory} from 'react-router-dom';
-import ModalLoader from "../common/ModalLoader";
+import { useParams, useHistory, Redirect} from 'react-router-dom';
+import ModalLoader from "../common/loaders/ModalLoader";
 import RetryError from "../common/errors/RetryError";
 import {deletePlayer, getPlayerById, updatePlayer} from "./PlayerService";
 import DeleteDialog from "../common/dialogs/DeleteDialog";
 import SuccessAlert from "../alerts/SuccessAlert";
 import ErrorAlert from "../alerts/ErrorAlert";
+import {connect} from "react-redux";
+import roles from "../../constants";
 
 
-function PlayerInfo(state) {
+function PlayerInfo(props) {
 
     const history = useHistory();
     const [isLoaderActive, setLoaderActive] = useState(false);
@@ -17,6 +19,7 @@ function PlayerInfo(state) {
     const [successAlertStyle, setSuccessAlertStyle] = useState({display: "none"});
     const [errorAlertStyle, setErrorAlertStyle] = useState({display: "none"});
     const [buttonsDisabled, setButtonsDisabled] = useState(false);
+    const [isContentAvailable, setContentAvailable] = useState(false);
     const params = useParams();
 
     const [player, setPlayer] = useState({
@@ -63,7 +66,7 @@ function PlayerInfo(state) {
         setErrorAlertStyle({display: "none", animation: ""});
         setSuccessAlertStyle({display: "none", animation: ""});
         setLoaderActive(true);
-        updatePlayer(params.id, player).then(response => {
+        updatePlayer(params.id, player, props.token).then(response => {
             showSuccessAlert();
         }).catch(error => {
             showErrorAlert();
@@ -74,21 +77,19 @@ function PlayerInfo(state) {
 
     function handleDeletePlayer() {
         setLoaderActive(true);
-        return deletePlayer(params.id).then(response => {
+        return deletePlayer(params.id, props.token).then(response => {
             history.push("/players");
         }).catch(() => {
-
-        }).finally(error => {
             setLoaderActive(false);
-        });
+        })
     }
 
     function fetchPlayer() {
         setLoaderActive(true);
         setRetryButtonDisplayed(false);
-        getPlayerById(params.id).then(response => {
+        getPlayerById(params.id, props.token).then(response => {
+            setContentAvailable(true);
             const _player = response.data.content.igrac;
-            console.log(_player);
             setPlayer({
                 id: _player.id,
                 name: _player.ime,
@@ -96,52 +97,78 @@ function PlayerInfo(state) {
                 birth_date: _player.datum_rodjenja,
                 medical_examination: _player.lekarski_pregled_datum
             });
+            setLoaderActive(false);
         }).catch(error => {
+            if (error.response?.status === 404) {
+                history.push("/error");
+            }
             setRetryButtonDisplayed(true);
-        }).finally(() => {
             setLoaderActive(false);
         })
     }
 
     useEffect(() => {
-        fetchPlayer();
+        if (props.isAdmin) {
+            fetchPlayer(props.token);
+        }
     }, []);
 
-    return (
-        <>
-            <DeleteDialog isDialogShown={isDialogShown} closeDialog={() => setDialogShown(!isDialogShown)} confirmDeletePlayer={() => handleDeletePlayer()} />
-            <ModalLoader isActive={isLoaderActive} />
-            <div className="container-fluid pt-5">
-                <RetryError isActive={retryButtonDisplayed} retry={() => fetchPlayer()} />
-                <form onSubmit={(event) => confirmPlayerUpdate(event)}>
-                    <div className="form-group w-50">
-                        <label htmlFor="nameInput">Ime</label>
-                        <input type="text" className="form-control" id="nameInput" aria-describedby="emailHelp"
-                               placeholder="Ime" name="name" value={player.name} onChange={handleChange} required />
+    if (props.isAdmin) {
+        if (isContentAvailable) {
+            return (
+                <>
+                    <DeleteDialog isDialogShown={isDialogShown} closeDialog={() => setDialogShown(!isDialogShown)} confirmDeletePlayer={() => handleDeletePlayer()} />
+                    <ModalLoader isActive={isLoaderActive} />
+                    <div className="container-fluid pt-5">
+                        <RetryError isActive={retryButtonDisplayed} retry={() => fetchPlayer()} />
+                        <form onSubmit={(event) => confirmPlayerUpdate(event)}>
+                            <div className="form-group w-50">
+                                <label htmlFor="nameInput">Ime</label>
+                                <input type="text" className="form-control" id="nameInput" aria-describedby="emailHelp"
+                                       placeholder="Ime" name="name" value={player.name} onChange={handleChange} required />
+                            </div>
+                            <div className="form-group w-50">
+                                <label htmlFor="surnameInput">Prezime</label>
+                                <input type="text" className="form-control" id="surnameInput" placeholder="Prezime"
+                                       name="surname" value={player.surname} onChange={handleChange} required />
+                            </div>
+                            <div className="form-group w-25">
+                                <label htmlFor="birthDate">Datum rodjenja</label>
+                                <input type="date" className="form-control" id="birthDate"
+                                       name="birth_date" value={player.birth_date} onChange={handleChange} required />
+                            </div>
+                            <div className="form-group w-25">
+                                <label htmlFor="medicalExaminationDate">Datum lekarskog pregleda</label>
+                                <input type="date" className="form-control" id="medicalExaminationDate"
+                                       name="medical_examination" value={player.medical_examination} onChange={handleChange} required />
+                            </div>
+                            <button type="submit" className="btn btn-primary" disabled={buttonsDisabled}>Sačuvaj</button>
+                            <button type="button" className="btn btn-danger ml-2" disabled={buttonsDisabled} onClick={() => setDialogShown(!isDialogShown)}>Obriši</button>
+                        </form>
                     </div>
-                    <div className="form-group w-50">
-                        <label htmlFor="surnameInput">Prezime</label>
-                        <input type="text" className="form-control" id="surnameInput" placeholder="Prezime"
-                               name="surname" value={player.surname} onChange={handleChange} required />
-                    </div>
-                    <div className="form-group w-25">
-                        <label htmlFor="birthDate">Datum rodjenja</label>
-                        <input type="date" className="form-control" id="birthDate"
-                               name="birth_date" value={player.birth_date} onChange={handleChange} required />
-                    </div>
-                    <div className="form-group w-25">
-                        <label htmlFor="medicalExaminationDate">Datum lekarskog pregleda</label>
-                        <input type="date" className="form-control" id="medicalExaminationDate"
-                               name="medical_examination" value={player.medical_examination} onChange={handleChange} required />
-                    </div>
-                    <button type="submit" className="btn btn-primary" disabled={buttonsDisabled}>Sačuvaj</button>
-                    <button type="button" className="btn btn-danger ml-2" disabled={buttonsDisabled} onClick={() => setDialogShown(!isDialogShown)}>Obriši</button>
-                </form>
-            </div>
-            <SuccessAlert alertStyle={successAlertStyle} alertText="Igrač je ažuriran" />
-            <ErrorAlert alertStyle={errorAlertStyle} alertText="Igrač nije ažuriran" />
-        </>
-    )
+                    <SuccessAlert alertStyle={successAlertStyle} alertText="Igrač je ažuriran" />
+                    <ErrorAlert alertStyle={errorAlertStyle} alertText="Igrač nije ažuriran" />
+                </>
+        )} else {
+            return (
+                <>
+                    <ModalLoader isActive={isLoaderActive} />
+                    <RetryError isActive={retryButtonDisplayed} retry={() => fetchPlayer()} />
+                </>
+            )
+        }
+        } else {
+        return (
+            <Redirect push to="/error" />
+        )
+    }
 }
 
-export default PlayerInfo;
+function mapStateToProps(state) {
+    return {
+        token: state.token,
+        isAdmin: state.role === roles.ADMINISTRATOR
+    }
+}
+
+export default connect(mapStateToProps)(PlayerInfo);

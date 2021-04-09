@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 
-function InfoCards(state) {
+function InfoCards() {
     return (
-        <div className="container">
+        <div className="container position-relative" style={{minHeight: "80vh"}}>
             <div className="card-deck mb-3 text-center">
                 <div className="card mb-4 box-shadow">
                     <div className="card-header">

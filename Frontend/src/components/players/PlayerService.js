@@ -4,20 +4,21 @@ function getPlayersByName(playerName) {
     return axios.get('/players?playerName=' + playerName);
 }
 
-function getPlayerById(playerId) {
-    return axios.get('players/' + playerId);
+function getPlayerById(playerId, _token) {
+    console.log(_token);
+    return axios.get('players/' + playerId, {headers: {Authorization: _token}});
 }
 
-function insertNewPlayer(requestBody) {
-    return axios.post('/players', requestBody);
+function insertNewPlayer(requestBody, _token) {
+    return axios.post('/players', requestBody, {headers: {Authorization: _token}});
 }
 
-function updatePlayer(playerId, requestBody) {
-    return axios.put('/players/' + playerId, requestBody);
+function updatePlayer(playerId, requestBody, _token) {
+    return axios.put('/players/' + playerId, requestBody, {headers: {Authorization: _token}});
 }
 
-function deletePlayer(playerId) {
-    return axios.delete('/players/' + playerId);
+function deletePlayer(playerId, _token) {
+    return axios.delete('/players/' + playerId, {headers: {Authorization: _token}});
 }
 
 export {
