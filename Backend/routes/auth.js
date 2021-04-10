@@ -42,6 +42,7 @@ router.post('/login',
 
                 return res.status(200).json({
                     content: {
+                        id: user.id,
                         token: token,
                         name: user.ime,
                         role: user.uloga
@@ -136,7 +137,6 @@ router.patch('/change-password/:userId',
                 })
             }
             bcrypt.hash(req.body.password, parseInt(process.env.BCRYPT_SALT)).then(password => {
-                    console.log('NAKON');
                     user.update({
                         lozinka: password
                     }).then(success => {
