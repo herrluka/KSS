@@ -19,7 +19,7 @@ function Navbar(state) {
                         <Link to="/" className="nav-link">Početna</Link>
                     </li>
                     <li className="nav-item active">
-                        <Link to="/lala" className="nav-link">Not found</Link>
+                        <Link to="/users" className="nav-link">Korisnici</Link>
                     </li>
                     <li className="nav-item dropdown show" onClick={() => setDropdownCollapsed(!isDropdownCollapsed)}>
                         <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button"

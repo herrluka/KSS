@@ -1,7 +1,7 @@
 function CreatePlayerDialog(state) {
     return (
         <>
-            <div id="addEmployeeModal" className={"centered w-25 fade show " + (state.isDialogShown?"d-block ":"d-none")} >
+            <div id="addPlayerModal" className={"centered w-25 fade show " + (state.isDialogShown?"d-block ":"d-none")} >
                 <div className="modal-dialog w-100">
                     <div className="modal-content">
                         <form id="new-player-form" onSubmit={(event) => state.onValidateForm(event)}>

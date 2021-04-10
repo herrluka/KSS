@@ -1,7 +1,8 @@
 const initState = {
     token: null,
     role: null,
-    userName: ""
+    userName: null,
+    userId: null
 };
 
 const rootReducer = (state = initState, action) => {
@@ -10,7 +11,8 @@ const rootReducer = (state = initState, action) => {
             ...state,
             token: 'Bearer ' + action.token,
             userName: action.userName,
-            role: action.role
+            role: action.role,
+            userId: action.userId
         }
     }
     return state;

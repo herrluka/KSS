@@ -8,17 +8,21 @@ import Register from  "./components/register/Register";
 import League from "./components/league/League";
 import Players from "./components/players/Players";
 import PlayerInfo from "./components/players/PlayerInfo";
+import Users from "./components/users/Users";
+import ChangePassword from "./components/users/ChangePassword";
 
 function App() {
     return (
         <>
         <Navbar />
         <Switch>
-            <Route path="/players/:id" exact component={PlayerInfo} />
-            <Route path="/players" exact component={Players} />
-            <Route path="/leagues" exact component={League} />
-            <Route path="/login" exact component={Login} />
-            <Route path="/register" exact component={Register} />
+            <Route path="/change-password/:userId" component={ChangePassword} />
+            <Route path="/users/" component={Users} />
+            <Route path="/players/:id" component={PlayerInfo} />
+            <Route path="/players" component={Players} />
+            <Route path="/leagues" component={League} />
+            <Route path="/login" component={Login} />
+            <Route path="/register" component={Register} />
             <Route path="/" exact component={HomePage} />
             <Route component={NotFoundPage} />
         </Switch>

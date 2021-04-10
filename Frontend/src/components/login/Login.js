@@ -36,6 +36,7 @@ function Login(props) {
                     token: response.data.content.token,
                     userName: response.data.content.name,
                     role: response.data.content.role,
+                    id: response.data.content.id,
                 });
                 history.push('/');
             }
@@ -79,7 +80,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        setAuthData: (user) => {dispatch({type: 'SET_AUTH_FIELDS', token: user.token, userName: user.name, role: user.role})}
+        setAuthData: (user) => {dispatch({type: 'SET_AUTH_FIELDS', token: user.token, userName: user.userName,
+            role: user.role, userId: user.id})}
     }
 }
 
