@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom';
 
-function PlayerRow(state) {
+function PlayerRow(props) {
     return (
-        <tr key={state.playerId}>
-            <td scope="row">{state.playerName}</td>
-            <td>{state.playerSurname}</td>
-            <td>{state.playerDateOfBirth}</td>
-            {state.isAdmin?<td className="border-top-0 text-left w-15">
-                <Link to={'players/' + state.playerId} type={'button'}>
+        <tr key={props.playerId}>
+            <td>{props.playerName}</td>
+            <td>{props.playerSurname}</td>
+            <td>{props.playerDateOfBirth}</td>
+            {props.isAdmin?<td className="border-top-0 text-left w-15">
+                <Link to={'players/' + props.playerId} type={'button'}>
                     Više detalja
                 </Link>
             </td>:null}

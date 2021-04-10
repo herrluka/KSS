@@ -1,7 +1,7 @@
 function DeleteDialog(props) {
     return (
         <>
-            <div id="deleteEmployeeModal" className={"centered w-25 fade show " + (props.isDialogShown?"d-block ":"d-none")}>
+            <div id="deleteModal" className={"centered w-25 fade show " + (props.isDialogShown?"d-block ":"d-none")}>
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <form>

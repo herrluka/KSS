@@ -1,5 +1,4 @@
 import { useState} from 'react';
-import './Login.css';
 import {login} from "./LoginService";
 import {useHistory} from "react-router-dom";
 import RetryError from "../common/errors/RetryError";

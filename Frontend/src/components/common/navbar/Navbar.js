@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Link} from "react-router-dom";
 import Auth from "./Auth";
 
-function Navbar(state) {
+function Navbar(props) {
 
     const [isNavbarCollapsed, setNavbarCollapsed] = useState(false);
     const [isDropdownCollapsed, setDropdownCollapsed] = useState(false);
@@ -21,11 +21,8 @@ function Navbar(state) {
                     <li className="nav-item active">
                         <Link to="/users" className="nav-link">Korisnici</Link>
                     </li>
-                    <li className="nav-item dropdown show" onClick={() => setDropdownCollapsed(!isDropdownCollapsed)}>
-                        <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button"
-                           aria-haspopup="true" aria-expanded="false" >
+                    <li className="nav-link active dropdown" style={{cursor: 'pointer'}} onClick={() => setDropdownCollapsed(!isDropdownCollapsed)}>
                             Dropdown
-                        </a>
                         <div className="dropdown-menu" aria-labelledby="navbarDropdown" style={isDropdownCollapsed?{display:"block"}:{display:"none"}}>
                             {/*<a className="dropdown-item" href="#">Action</a>*/}
                             {/*<a className="dropdown-item" href="#">Another action</a>*/}

@@ -7,8 +7,6 @@ import roles from "../../constants";
 import {connect} from "react-redux";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPlusSquare} from "@fortawesome/free-solid-svg-icons";
-// import SuccessAlert from "../alerts/SuccessAlert";
-// import ErrorAlert from "../alerts/ErrorAlert";
 import UserRow from "./UserRow";
 import UserDialog from "./UserDialog";
 import DeleteDialog from "../common/dialogs/DeleteDialog";

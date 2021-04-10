@@ -1,5 +1,5 @@
-function ModalLoader(state) {
-    if (state.isActive) {
+function ModalLoader(props) {
+    if (props.isActive) {
         return (
             <div className="modal-dialog-centered position-fixed d-flex justify-content-center align-items-center w-100"
             style={{zIndex: 2000}}>

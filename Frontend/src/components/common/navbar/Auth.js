@@ -1,8 +1,6 @@
 import {Link, useHistory} from "react-router-dom";
 import React from "react";
 import {connect} from "react-redux";
-import roles from "../../../constants";
-
 
 function Auth(props) {
 
@@ -42,7 +40,6 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mapStateToProps(state) {
-    console.log(state.userName);
     return {
         userName: state.userName,
     }
