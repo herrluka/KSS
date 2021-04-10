@@ -1,11 +1,21 @@
 import React, {useState} from 'react';
-import {Link} from "react-router-dom";
-import Auth from "./Auth";
+import {Link, useHistory} from "react-router-dom";
+import NavbarAuth from "./NavbarAuth";
+import {faBalanceScaleRight, faBasketballBall, faHome, faRunning, faUser} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {connect} from "react-redux";
+import roles from "../../../constants";
 
 function Navbar(props) {
 
     const [isNavbarCollapsed, setNavbarCollapsed] = useState(false);
-    const [isDropdownCollapsed, setDropdownCollapsed] = useState(false);
+    const history = useHistory();
+
+    function logout() {
+        props.setAuthData();
+        history.push("/");
+    }
+
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             <button className="navbar-toggler" type="button"  data-target="#navbarSupportedContent"
@@ -15,29 +25,42 @@ function Navbar(props) {
             </button>
             <div className={isNavbarCollapsed?"navbar-collapse":"collapse navbar-collapse"} id="navbarSupportedContent">
                 <ul className="navbar-nav mr-auto">
-                    <li className="nav-item active">
-                        <Link to="/" className="nav-link">Početna</Link>
+                    <li className="nav-item">
+                        <Link to="/" className="nav-link"><FontAwesomeIcon className="h5 mr-2 mb-0" icon={faHome} />Početna</Link>
                     </li>
-                    <li className="nav-item active">
-                        <Link to="/users" className="nav-link">Korisnici</Link>
+                    {props.isAdmin?
+                        <li className="nav-item">
+                            <Link to="/users" className="nav-link"><FontAwesomeIcon className="h5 mr-2 mb-0" icon={faUser} />Korisnici</Link>
+                        </li>
+                        :null
+                    }
+                    <li className="nav-item">
+                        <Link to="/leagues" className="nav-link"><FontAwesomeIcon className="h5 mr-2 mb-0" icon={faBasketballBall} />Lige</Link>
+                    </li>:
+                    <li className="nav-item">
+                        <Link to="/players" className="nav-link"><FontAwesomeIcon className="h5 mr-2 mb-0" icon={faRunning} />Igrаči</Link>
                     </li>
-                    <li className="nav-link active dropdown" style={{cursor: 'pointer'}} onClick={() => setDropdownCollapsed(!isDropdownCollapsed)}>
-                            Dropdown
-                        <div className="dropdown-menu" aria-labelledby="navbarDropdown" style={isDropdownCollapsed?{display:"block"}:{display:"none"}}>
-                            {/*<a className="dropdown-item" href="#">Action</a>*/}
-                            {/*<a className="dropdown-item" href="#">Another action</a>*/}
-                            {/*<div className="dropdown-divider" />*/}
-                            {/*<a className="dropdown-item" href="#">Something else here</a>*/}
-                        </div>
+                    <li className="nav-item">
+                        <Link to="/referees" className="nav-link"><FontAwesomeIcon className="h5 mr-2 mb-0" icon={faBalanceScaleRight} />Sudije</Link>
                     </li>
-                    {/*<li className="nav-item">*/}
-                    {/*    <a className="nav-link disabled" href="#">Disabled</a>*/}
-                    {/*</li>*/}
                 </ul>
-                <Auth/>
+                <NavbarAuth handleLogout={() => logout()} userName={props.userName}/>
             </div>
         </nav>
     )
 }
 
-export default Navbar;
+function mapDispatchToProps(dispatch) {
+    return {
+        setAuthData: () => {dispatch({type: 'SET_AUTH_FIELDS', token: null, userName: null, role: null})}
+    }
+}
+
+function mapStateToProps(state) {
+    return {
+        userName: state.userName,
+        isAdmin: state.role === roles.ADMINISTRATOR
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Navbar);
