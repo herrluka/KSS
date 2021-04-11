@@ -10,12 +10,14 @@ import Players from "./components/players/Players";
 import PlayerInfo from "./components/players/PlayerInfo";
 import Users from "./components/users/Users";
 import ChangePassword from "./components/users/ChangePassword";
+import Referee from "./components/referees/Referee";
 
 function App() {
     return (
         <>
         <Navbar />
         <Switch>
+            <Route path="/referees" component={Referee} />
             <Route path="/change-password/:userId" component={ChangePassword} />
             <Route path="/users/" component={Users} />
             <Route path="/players/:id" component={PlayerInfo} />

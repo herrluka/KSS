@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 
-function Search(props) {
+function SearchWithButton(props) {
     const [searchText, setSearchText] = useState('');
 
     return (
@@ -16,10 +16,10 @@ function Search(props) {
                         </div>
                         <div className="col">
                             <input className="form-control form-control-lg form-control-borderless" type="search"
-                                   placeholder="Pretražite igrače po imenu" onChange={(event => setSearchText(event.target.value))} />
+                                   placeholder={props.searchPlaceholder} onChange={(event => setSearchText(event.target.value))} />
                         </div>
                         <div className="col-auto">
-                            <button className="btn btn-lg btn-primary" onClick={() => props.searchPlayers(searchText)}>Traži</button>
+                            <button className="btn btn-lg btn-primary" onClick={() => props.search(searchText)}>Traži</button>
                         </div>
                     </div>
                 </div>
@@ -28,4 +28,4 @@ function Search(props) {
     )
 }
 
-export default Search;
+export default SearchWithButton;

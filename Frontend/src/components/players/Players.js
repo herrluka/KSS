@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import Search from "../common/search/Search";
+import SearchWithButton from "../common/search/SearchWithButton";
 import PlayerRow from "./PlayerRow";
 import ModalLoader from "../common/loaders/ModalLoader";
 import RetryError from "../common/errors/RetryError";
@@ -98,7 +98,7 @@ function Players(props) {
                                 onValidateForm={(event) => saveNewPlayer(event)} player={newPlayer}/>
             <ModalLoader isActive={isLoaderActive} />
             <RetryError isActive={retryButtonDisplayed} retry={() => fetchPlayers(searchText)} />
-            <Search searchPlayers={(_searchText) => fetchPlayers(_searchText)} />
+            <SearchWithButton search={(_searchText) => fetchPlayers(_searchText)} searchPlaceholder={"Pretražite igrače po imenu"} />
             {props.isAdmin?<div className="mr-5 m-5 text-center">
                 <button className="btn btn-success" onClick={() => setDialogShown(!isDialogShown)}>
                 <div className="d-flex">

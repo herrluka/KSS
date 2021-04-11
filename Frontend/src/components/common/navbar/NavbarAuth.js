@@ -19,7 +19,7 @@ function NavbarAuth(props) {
     } else {
         return (
             <ul className="navbar-nav">
-                <li className="nav-item active">
+                <li className="nav-item">
                     <Link to="/login" className="nav-link"><FontAwesomeIcon className="h5 mr-2 mb-0" icon={faSignInAlt} />Prijavite se</Link>
                 </li>
             </ul>
