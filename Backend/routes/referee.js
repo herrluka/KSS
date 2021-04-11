@@ -9,11 +9,11 @@ const handleDBError = require('../help/db_error_handler');
 
 router.get('/', (req, res) => {
     Referee.findAll({
-        attributes: ['ime', 'prezime'],
+        attributes: ['id', 'ime', 'prezime'],
         include: {
             model: League,
             as: 'liga',
-            attributes: ['naziv_lige']
+            attributes: ['id', 'naziv_lige']
         }
     }).then(referees => {
         return res.status(200).json({
