@@ -31,7 +31,7 @@ router.get('/:refereeId',
         include: {
             model: League,
             as: 'liga',
-            attributes: ['naziv_lige']
+            attributes: ['id', 'naziv_lige']
         },
         where: {
             id: req.params.refereeId
