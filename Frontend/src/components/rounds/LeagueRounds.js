@@ -263,7 +263,7 @@ function LeagueRounds(props) {
                                         onValidateForm={event => handleUpdateRound(event)}
                                         onCheckBoxChange={() => handleCheckBoxChange()}
                                         mode={editDialogMode}/>
-            :<RoundsList rounds={rounds} />}
+            :null}
             {props.isAdmin?<SuccessAlert alertStyle={successAlertStyle} alertText="Kolo je ažurirano" />:null}
             {props.isAdmin?<ErrorAlert alertStyle={errorAlertStyle} alertText="Kolo nije ažurirano" />:null}
             {props.isAdmin?<DeleteDialog
