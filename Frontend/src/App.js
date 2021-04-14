@@ -12,6 +12,7 @@ import Users from "./components/users/Users";
 import ChangePassword from "./components/users/ChangePassword";
 import Referee from "./components/referees/Referee";
 import RefereeInfo from "./components/referees/RefereeInfo";
+import LeagueRounds from "./components/rounds/LeagueRounds";
 
 function App() {
     return (
@@ -24,6 +25,7 @@ function App() {
             <Route path="/users/" component={Users} />
             <Route path="/players/:id" component={PlayerInfo} />
             <Route path="/players" component={Players} />
+            <Route path="/leagues/:id" component={LeagueRounds} />
             <Route path="/leagues" component={League} />
             <Route path="/login" component={Login} />
             <Route path="/register" component={Register} />

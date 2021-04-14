@@ -100,3 +100,28 @@ code {
   0% {transform: translateX(0px);}
   100% {transform: translateX(2000px);}
 }
+
+.hoverable-round-admin {
+  color: white;
+  background: darkgray;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.hoverable-round-admin {
+  color: white;
+  background: darkgray;
+}
+
+.hoverable-round-admin:hover {
+  background: #737574;
+  cursor: pointer;
+}
+
+.hoverable-round:hover {
+  background: #737574;
+  cursor: pointer;
+}
+
+

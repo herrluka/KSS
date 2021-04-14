@@ -5,5 +5,11 @@ const instance = axios.create({
         timeout: 5000
     }
 );
+instance.interceptors.response.use(response => {
+    if (response.status === 401) {
+        console.log('AUTH!');
+    }
+    return response;
+});
 
 export default instance;
