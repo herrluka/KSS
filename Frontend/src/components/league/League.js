@@ -1,23 +1,24 @@
 import { useEffect, useState } from 'react';
 import { getAllLeagues, createLeague, updateLeague, deleteLeague } from "./LeagueService";
 import ModalLoader from "../common/loaders/ModalLoader";
-import {Link} from "react-router-dom";
 import RetryError from "../common/errors/RetryError";
 import roles from "../../constants";
 import {connect} from "react-redux";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlusSquare} from "@fortawesome/free-solid-svg-icons";
 import LeagueDialog from "./LeagueDialog";
 import DeleteDialog from "../common/dialogs/DeleteDialog";
 import SuccessAlert from "../alerts/SuccessAlert";
 import ErrorAlert from "../alerts/ErrorAlert";
+import LeagueListForAdmin from "./LeagueListForAdmin";
+import LeaguesHeaderForAdmin from "./LeaguesHeaderForAdmin";
+import LeaguesHeader from "./LeaguesHeader";
 
 
 function League(props) {
 
     const [leagues, setLeagues] = useState([]);
     const [loaderActive, setLoaderActive] = useState(true);
-    const [retryButtonDisplayed, setRetryButtonDisplayed] = useState(false);
+    const [isContentLoaded, setContentLoaded] = useState(false);
+    const [serverErrorOccurred, setServerErrorOccurred] = useState(false);
     const [isDialogShown, setDialogShown] = useState(false);
     const [isDeleteDialogShown, setDeleteDialogShown] = useState(false);
     const [deleteDialogLeagueId, setDeleteDialogLeagueId] = useState(null);
@@ -30,26 +31,25 @@ function League(props) {
     const [successAlertStyle, setSuccessAlertStyle] = useState({display: "none"});
     const [errorAlertStyle, setErrorAlertStyle] = useState({display: "none"});
 
-    useEffect(() => {
+    function fetchData() {
         getAllLeagues().then(_leagues => {
             setLeagues(_leagues.data.content);
+            setContentLoaded(true);
         }).catch(error => {
-            setRetryButtonDisplayed(true);
+            setServerErrorOccurred(true);
         }).finally(() => {
             setLoaderActive(false);
         })
+    }
+
+    useEffect(() => {
+        fetchData();
     }, []);
 
     function retryGettingLeagues() {
         setLoaderActive(true);
-        setRetryButtonDisplayed(false);
-        getAllLeagues().then(_leagues => {
-            setLeagues(_leagues.data.content);
-        }).catch(error => {
-            setRetryButtonDisplayed(true);
-        }).finally(() => {
-            setLoaderActive(false);
-        })
+        setServerErrorOccurred(false);
+        fetchData();
     }
 
     function handleChange(event) {
@@ -107,7 +107,6 @@ function League(props) {
     function saveNewLeague(event) {
         event.preventDefault();
         setLoaderActive(true);
-        console.log(leagueInDialog);
         createLeague(leagueInDialog, props.token).then(response => {
             setDialogShown(false);
             showSuccessAlert();
@@ -149,67 +148,46 @@ function League(props) {
         });
     }
 
-    if (props.isAdmin) {
+    if (serverErrorOccurred) {
+        return <RetryError isActive={true} retry={() => retryGettingLeagues()} />
+    }
+
+    if (!isContentLoaded) {
+       return <ModalLoader isActive={true} />
+    }
+
+    if (!props.isAdmin) {
         return (
             <>
                 <ModalLoader isActive={loaderActive} />
-                <RetryError isActive={retryButtonDisplayed} retry={() => retryGettingLeagues()} />
-                <h1 className="text-center pt-4 mb-5">Lige KSS-a</h1>
-                <div className="mr-5 m-5 text-center">
-                    <button className="btn btn-success" onClick={() => openCreateDialog()}>
-                        <div className="d-flex">
-                            <FontAwesomeIcon className="h4 mr-2 mb-0" icon={faPlusSquare} />Dodaj ligu
-                        </div>
-                    </button>
-                </div>
-                <div className="container-fluid text-center align-content-center overflow-auto mb-5 w-50">
-                    {leagues.map(league => {
-                        return (
-                            <div key={league.id} className="d-flex text-center justify-content-between align-content-center">
-                                <h5><Link to={"leagues/" + league.id}>{league.naziv_lige}</Link></h5>
-                                <div>
-                                    <button className="btn btn-primary"
-                                            onClick={() => openEditDialog(league.id, league.naziv_lige, league.rang)}>
-                                        Uredi</button>
-                                    <button className="btn btn-danger" onClick={() => openDeleteDialog(league.id)}>
-                                        Izbriši
-                                    </button>
-                                </div>
-                            </div>
-                        )
-                    })}
-                </div>
-                <LeagueDialog mode={dialogMode} league={leagueInDialog} isDialogShown={isDialogShown}
-                              closeDialog={() => setDialogShown(!isDialogShown)}
-                              onInputChange={(event) => handleChange(event)}
-                              onValidateCreateForm={(event) => saveNewLeague(event)}
-                              onValidateEditForm={(event) => updateExistingLeague(event)}/>
-                <DeleteDialog
-                    id={deleteDialogLeagueId}
-                    whatToDelete="ligu"
-                    closeDialog={() => setDeleteDialogShown(!isDeleteDialogShown)}
-                    isDialogShown={isDeleteDialogShown}
-                    confirmDelete={(id) => deleteExistingLeague(id)}/>
-                <SuccessAlert alertStyle={successAlertStyle} alertText="Liga je ažurirana" />
-                <ErrorAlert alertStyle={errorAlertStyle} alertText="Liga nije ažurirana" />
-            </>
-        )
-    } else {
-        return (
-            <>
-                <ModalLoader isActive={loaderActive} />
-                <RetryError isActive={retryButtonDisplayed} retry={() => retryGettingLeagues()} />
-                <h1 className="text-center pt-4 mb-5">Lige KSS-a</h1>
-                <div className="container-fluid text-center align-content-center overflow-auto mb-5">
-                    {leagues.map(league => {
-                        return (
-                            <h5><Link to={"leagues/" + league.id}>{league.naziv_lige}</Link></h5>
-                        )
-                    })}
-                </div>
+                <LeaguesHeader leagues={leagues} />
             </>
         )
     }
+
+    return (
+        <>
+            <ModalLoader isActive={loaderActive} />
+            <LeaguesHeaderForAdmin openCreateDialogEvent={() => openCreateDialog()} />
+            <LeagueListForAdmin leagues={leagues}
+                                openEditDialogEvent={(_id, _name, _rank) => openEditDialog(_id, _name, _rank)}
+                                openDeleteDialogEvent={(leagueId) => openDeleteDialog(leagueId)}/>
+            <LeagueDialog mode={dialogMode} league={leagueInDialog} isDialogShown={isDialogShown}
+                          closeDialog={() => setDialogShown(!isDialogShown)}
+                          onInputChange={(event) => handleChange(event)}
+                          onValidateCreateForm={(event) => saveNewLeague(event)}
+                          onValidateEditForm={(event) => updateExistingLeague(event)}/>
+            <DeleteDialog
+                id={deleteDialogLeagueId}
+                whatToDelete="ligu"
+                closeDialog={() => setDeleteDialogShown(!isDeleteDialogShown)}
+                isDialogShown={isDeleteDialogShown}
+                confirmDelete={(id) => deleteExistingLeague(id)}/>
+            <SuccessAlert alertStyle={successAlertStyle} alertText="Liga je ažurirana" />
+            <ErrorAlert alertStyle={errorAlertStyle} alertText="Liga nije ažurirana" />
+        </>
+    )
+
 }
 function mapStateToProps(state) {
     return {
