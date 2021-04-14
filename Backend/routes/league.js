@@ -2,10 +2,14 @@ const express = require('express');
 const router = express.Router();
 const League = require('../models/league');
 const Round = require('../models/round');
+const Match = require('../models/match');
+const Club = require('../models/club');
 const authenticationMiddleware = require('../middlewares/auth_middleware');
 const isAdmin = require('../middlewares/role_middleware');
 const {body, validationResult} = require('express-validator');
 const handleDBError = require('../help/db_error_handler');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 router.get('',
     (req, res) => {
@@ -38,17 +42,41 @@ router.get('/:leagueId/rounds',
                 naziv_lige: rounds[0].liga.naziv_lige
             };
             responseBody.kola = [];
+            let roundsIds = [];
             rounds.forEach(round => {
+                if (!round.eliminaciona_faza) {
+                    roundsIds.push(round.id);
+                }
                responseBody.kola.push({
                    id: round.id,
                    naziv: round.naziv,
                    datum_od: round.datum_od,
-                   datum_do: round.datum_do
+                   datum_do: round.datum_do,
+                   eliminaciona_faza: round.eliminaciona_faza,
+                   liga_id: round.liga_id,
                });
             });
-            return res.status(200).json({
-                content: responseBody
-            })
+            Match.findAll({
+                where: {
+                    kolo_id: {
+                        [Op.in]: roundsIds,
+                    }
+                },
+                include: [
+                    {
+                        model: Club,
+                        as: 'klub_A',
+                        attributes: ['naziv_kluba']
+                    }
+                ]
+            }).then(matches => {
+                responseBody.rang_lista = calculateWinsAndLosesForClubs(matches);
+                return res.status(200).json({
+                    content: responseBody
+                })
+            }).catch(error => {
+                return handleDBError(res, error);
+            });
         }).catch(error => {
             return handleDBError(res, error);
         })
@@ -142,5 +170,35 @@ router.delete('/:leagueId',
         return handleDBError(res, error);
     })
 });
+
+function calculateWinsAndLosesForClubs(matches) {
+    let clubsDictionary = {};
+    matches.forEach(match => {
+        clubsDictionary[match.tim_A_id] = {
+            wins: 0,
+            loses: 0,
+            total_points: 0,
+            club_name: match.klub_A.naziv_kluba
+        }
+    });
+
+    matches.forEach(match => {
+        if (match.tim_A_koseva > match.tim_B_koseva) {
+            clubsDictionary[match.tim_A_id]['wins'] += 1;
+            clubsDictionary[match.tim_B_id]['loses'] += 1;
+        } else if (match.tim_A_koseva < match.tim_B_koseva) {
+            clubsDictionary[match.tim_A_id]['loses'] += 1;
+            clubsDictionary[match.tim_B_id]['wins'] += 1;
+        }
+        clubsDictionary[match.tim_A_id]['total_points'] += match.tim_A_koseva;
+        clubsDictionary[match.tim_B_id]['total_points'] += match.tim_B_koseva;
+    });
+
+    let standingsList = [];
+    for (const [key, value] of Object.entries(clubsDictionary)) {
+        standingsList.push(value);
+    }
+    return standingsList;
+}
 
 module.exports = router;

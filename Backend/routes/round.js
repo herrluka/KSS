@@ -101,6 +101,7 @@ router.post('',
     body('name').exists(),
     body("date_from").exists(),
     body("date_to").exists(),
+    body("eliminate_phase").isBoolean(),
     body('league_id').isInt(),
     authenticationMiddleware,
     authorizationMiddleware,
@@ -117,7 +118,8 @@ router.post('',
             naziv: req.body.name,
             datum_od: req.body.date_from,
             datum_do: req.body.date_to,
-            liga_id: req.body.league_id
+            liga_id: req.body.league_id,
+            eliminaciona_faza: req.body.eliminate_phase,
         }).then(success => {
             return res.status(201).json({
                 content: {
@@ -140,6 +142,7 @@ router.put('/:roundId',
     body('name').exists(),
     body("date_from").exists(),
     body("date_to").exists(),
+    body("eliminate_phase").exists(),
     body('league_id').isInt(),
     authenticationMiddleware,
     authorizationMiddleware,
@@ -161,7 +164,8 @@ router.put('/:roundId',
                 naziv: req.body.name,
                 datum_od: req.body.date_from,
                 datum_do: req.body.date_to,
-                liga_id: req.body.league_id
+                liga_id: req.body.league_id,
+                eliminaciona_faza: req.body.eliminate_phase,
             }).then(success => {
                 return res.status(204).json({
                     content: {

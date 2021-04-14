@@ -10,6 +10,7 @@ const Round = sequelize.define('Kolo', {
         naziv: DataTypes.STRING,
         datum_od:  DataTypes.DATE,
         datum_do:  DataTypes.DATE,
+        eliminaciona_faza: DataTypes.BOOLEAN
     },
     {
         freezeTableName: true,
