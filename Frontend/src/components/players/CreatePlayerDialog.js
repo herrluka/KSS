@@ -32,7 +32,7 @@ function CreatePlayerDialog(props) {
                                 <div className="form-group">
                                     <label>Lekarski pregled</label>
                                     <input type="date" className="form-control" name="medical_examination"
-                                           onChange={event => props.onInputChange(event)} required
+                                           onChange={event => props.onInputChange(event)}
                                            value={props.player.medical_examination} />
                                 </div>
                             </div>

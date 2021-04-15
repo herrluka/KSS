@@ -1,23 +1,24 @@
-import { useState, useCallback } from 'react';
+import {useState, useEffect} from 'react';
 import SearchWithButton from "../common/search/SearchWithButton";
-import PlayerRow from "./PlayerRow";
 import ModalLoader from "../common/loaders/ModalLoader";
 import RetryError from "../common/errors/RetryError";
 import CreatePlayerDialog from "./CreatePlayerDialog";
 import {getPlayersByName, insertNewPlayer} from "./PlayerService";
-import {faPlusSquare} from "@fortawesome/free-solid-svg-icons";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import SuccessAlert from "../alerts/SuccessAlert";
 import ErrorAlert from "../alerts/ErrorAlert";
 import {connect} from "react-redux";
 import roles from "../../constants"
+import PlayersList from "./PlayersList";
+import PlayerHeaderAdmin from "./PlayerHeaderAdmin";
+import PlayerHeader from "./PlayerHeader";
 
 function Players(props) {
 
     const [searchText, setSearchText] = useState('');
     const [players, setPlayers] = useState([]);
     const [isLoaderActive, setLoaderActive] = useState(false);
-    const [retryButtonDisplayed, setRetryButtonDisplayed] = useState(false);
+    const [isContentLoaded, setContentLoaded] = useState(false);
+    const [serverErrorOccurred, setServerErrorOccurred] = useState(false);
     const [isDialogShown, setDialogShown] = useState(false);
     const [successAlertStyle, setSuccessAlertStyle] = useState({display: "none"});
     const [errorAlertStyle, setErrorAlertStyle] = useState({display: "none"});
@@ -58,7 +59,12 @@ function Players(props) {
     function saveNewPlayer(event) {
         event.preventDefault();
         setLoaderActive(true);
-        insertNewPlayer(newPlayer).then(response => {
+        insertNewPlayer({
+            name: newPlayer.name,
+            surname: newPlayer.surname,
+            birth_date: newPlayer.birth_date,
+            medical_examination: newPlayer.medical_examination!==''?newPlayer.medical_examination:null
+        }, props.token).then(response => {
             setDialogShown(false);
             showSuccessAlert();
             setNewPlayer({
@@ -68,6 +74,7 @@ function Players(props) {
                 birth_date: "",
                 medical_examination: ""
             });
+            setPlayers([]);
         }).catch(error => {
             showErrorAlert();
         }).finally(() => {
@@ -75,62 +82,50 @@ function Players(props) {
         })
     }
 
-    const fetchPlayers = useCallback((_searchText) => {
+    function fetchPlayers(_searchText) {
         setLoaderActive(true);
         setPlayers([]);
-        setRetryButtonDisplayed(false);
+        setServerErrorOccurred(false);
         setSearchText(_searchText);
         getPlayersByName(_searchText).then(players => {
             setPlayers(players.data.content);
-            setRetryButtonDisplayed(false);
+            setServerErrorOccurred(false);
+            setContentLoaded(true);
         }).catch(error => {
-            setRetryButtonDisplayed(true);
+            setServerErrorOccurred(true);
             setPlayers([]);
         }).finally(() => {
             setLoaderActive(false);
         })
-    }, []);
-
+    }
 
     return (
         <>
-            <CreatePlayerDialog isDialogShown={isDialogShown} closeDialog={() => setDialogShown(!isDialogShown)} onInputChange={(event) => handleChange(event)}
-                                onValidateForm={(event) => saveNewPlayer(event)} player={newPlayer}/>
             <ModalLoader isActive={isLoaderActive} />
-            <RetryError isActive={retryButtonDisplayed} retry={() => fetchPlayers(searchText)} />
+            <RetryError isActive={serverErrorOccurred} retry={() => fetchPlayers(searchText)} />
+            {props.isAdmin?
+                <PlayerHeaderAdmin showInsertDialogEvent={() => setDialogShown(!isDialogShown)}/>
+                :
+                <PlayerHeader />}
             <SearchWithButton search={(_searchText) => fetchPlayers(_searchText)} searchPlaceholder={"Pretražite igrače po imenu"} />
-            {props.isAdmin?<div className="mr-5 m-5 text-center">
-                <button className="btn btn-success" onClick={() => setDialogShown(!isDialogShown)}>
-                <div className="d-flex">
-                    <FontAwesomeIcon className="h4 mr-2 mb-0" icon={faPlusSquare} />Dodaj igrača
-                </div>
-                    </button>
-            </div>:null}
-            <div className="container-fluid justify-content-center mt-5 text-center w-75">
-                <table className="table">
-                    <thead className="bg-primary">
-                    <tr>
-                        <th className="text-light" scope="col">Ime</th>
-                        <th className="text-light" scope="col">Prezime</th>
-                        <th className="text-light" scope="col">Datum rodjenja</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        {players.map(player => {
-                            return <PlayerRow playerId={player.id} playerName={player.ime}
-                                              playerSurname={player.prezime} playerDateOfBirth={player.datum_rodjenja} isAdmin={props.isAdmin} />
-                        })}
-                    </tbody>
-                </table>
-            </div>
-            <SuccessAlert alertStyle={successAlertStyle} alertText="Igrač je uspešno sačuvan"/>
-            <ErrorAlert alertStyle={errorAlertStyle} alertText="Igrač nije sačuvan" />
+            <PlayersList players={players} isAdmin={props.isAdmin} isContentLoaded={isContentLoaded}/>
+            {props.isAdmin ?
+                <>
+                    <CreatePlayerDialog isDialogShown={isDialogShown} closeDialog={() => setDialogShown(!isDialogShown)}
+                                        onInputChange={(event) => handleChange(event)}
+                                        onValidateForm={(event) => saveNewPlayer(event)} player={newPlayer}/>
+                    < SuccessAlert alertStyle = {successAlertStyle} alertText="Igrač je uspešno sačuvan"/>
+                    <ErrorAlert alertStyle={errorAlertStyle} alertText="Igrač nije sačuvan" />
+                </>:
+                null
+            }
         </>
     )
 }
 function mapStateToProps(state) {
     return {
-        isAdmin: state.role === roles.ADMINISTRATOR
+        isAdmin: state.role === roles.ADMINISTRATOR,
+        token: state.token
     }
 }
 

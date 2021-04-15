@@ -63,8 +63,6 @@ function PlayerInfo(props) {
     function confirmPlayerUpdate(event) {
         event.preventDefault();
         setButtonsDisabled(true);
-        setErrorAlertStyle({display: "none", animation: ""});
-        setSuccessAlertStyle({display: "none", animation: ""});
         setLoaderActive(true);
         updatePlayer(params.id, player, props.token).then(response => {
             showSuccessAlert();
@@ -161,9 +159,9 @@ function PlayerInfo(props) {
             )
         }
         } else {
-        return (
-            <Redirect push to="/error" />
-        )
+            return (
+                <Redirect push to="/error" />
+            )
     }
 }
 
