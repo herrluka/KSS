@@ -5,6 +5,7 @@ const Match = require('../models/match');
 const Referee = require('../models/referee');
 const User = require('../models/user');
 const Club = require('../models/club');
+const League = require('../models/league');
 const authenticationMiddleware = require('../middlewares/auth_middleware');
 const authorizationMiddleware = require('../middlewares/role_middleware');
 const {body, validationResult} = require('express-validator');
@@ -16,7 +17,14 @@ router.get('/:roundId/matches', (req, res) => {
             {
                 model: Round,
                 as: 'kolo',
-                attributes: ['naziv', 'id']
+                attributes: ['naziv', 'id'],
+                include: [
+                    {
+                        model: League,
+                        as: 'liga',
+                        attributes: ['id', 'naziv_lige']
+                    }
+                ]
             },
             {
                 model: Referee,
@@ -44,7 +52,7 @@ router.get('/:roundId/matches', (req, res) => {
                 attributes: ['id', 'ime', 'prezime']
             },
         ],
-        attributes: ['id', 'tim_A_koseva', 'tim_B_koseva', 'odlozeno', 'zavrseno', 'datum_odrzavanja'],
+        attributes: ['id', 'tim_A_koseva', 'tim_B_koseva', 'tim_A_id', 'tim_B_id', 'odlozeno', 'datum_odrzavanja', 'prvi_sudija_id', 'drugi_sudija_id', 'azurirao'],
         where: {
             kolo_id: req.params.roundId
         },
@@ -53,7 +61,8 @@ router.get('/:roundId/matches', (req, res) => {
         let responseBody = {};
         responseBody.kolo = {
             kolo_id: matches[0].kolo.id,
-            naziv_kola: matches[0].kolo.naziv
+            naziv_kola: matches[0].kolo.naziv,
+            naziv_lige: matches[0].kolo.liga.naziv_lige
         };
         responseBody.utakmice = [];
         matches.forEach(match => {
@@ -63,26 +72,26 @@ router.get('/:roundId/matches', (req, res) => {
                 tim_B_koseva: match.tim_B_koseva,
                 odlozeno: match.odlozeno,
                 zavrseno: match.zavrseno,
-                prvi_sudija: {
+                prvi_sudija: match.prvi_sudija_id===null?null:{
                     id: match.prvi_sudija?.id,
                     ime: match.prvi_sudija?.ime,
                     prezime: match.prvi_sudija?.prezime
                 },
-                drugi_sudija: {
+                drugi_sudija: match.drugi_sudija_id===null?null: {
                     id: match.drugi_sudija?.id,
                     ime: match.drugi_sudija?.ime,
                     prezime: match.drugi_sudija?.prezime
                 },
-                azurirao: {
+                korisnik: match.azurirao===null?null: {
                     id: match.korisnik?.id,
                     ime: match.korisnik?.ime,
                     prezime: match.korisnik?.prezime
                 },
-                klub_A: {
+                klub_A: match.tim_A_id===null?null:{
                     id: match.klub_A?.id,
                     ime: match.klub_A?.naziv_kluba
                 },
-                klub_B: {
+                klub_B: match.tim_B_id===null?null:{
                     id: match.klub_B?.id,
                     ime: match.klub_B?.naziv_kluba
                 },

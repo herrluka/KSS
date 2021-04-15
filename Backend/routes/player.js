@@ -15,7 +15,7 @@ router.get('',
         const searchKey = req.query.playerName;
         if (searchKey) {
             Player.findAll({
-                attributes: ['id', 'ime', 'prezime'],
+                attributes: ['id', 'ime', 'prezime', 'datum_rodjenja'],
                 where: {
                     ime: {
                         [Op.like]: '%' + searchKey + "%"

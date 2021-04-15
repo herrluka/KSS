@@ -14,7 +14,6 @@ const Match = sequelize.define('Utakmica', {
     tim_B_koseva: DataTypes.STRING,
     datum_odrzavanja: DataTypes.DATE,
     odlozeno: DataTypes.BOOLEAN,
-    zavrseno: DataTypes.BOOLEAN,
 },{
     freezeTableName: true,
     timestamps: false,
