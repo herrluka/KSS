@@ -1,10 +1,6 @@
-import SearchWithoutButton from "../common/search/SearchWithoutButton";
 import {connect} from "react-redux";
 import roles from "../../constants";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlusSquare} from "@fortawesome/free-solid-svg-icons";
 import {useEffect, useState} from "react";
-import RefereeRow from "./RefereeRow";
 import {getAllReferees, insertReferee} from "./RefereeService";
 import ModalLoader from "../common/loaders/ModalLoader";
 import RetryError from "../common/errors/RetryError";
@@ -12,6 +8,10 @@ import CreateRefereeDialog from "./CreateRefereeDialog";
 import {getAllLeagues} from "../league/LeagueService";
 import SuccessAlert from "../alerts/SuccessAlert";
 import ErrorAlert from "../alerts/ErrorAlert";
+import RefereeList from "./RefereeList";
+import RefereeListAdmin from "./RefereeListAdmin";
+import RefereeHeaderForAdmin from "./RefereeHeaderForAdmin";
+import RefereeHeader from "./RefereeHeader";
 
 
 function Referee(props) {
@@ -59,10 +59,10 @@ function Referee(props) {
         getAllReferees().then(response => {
             setFetchedReferees(response.data.content);
             setShownReferees(response.data.content);
+            setFetchedFromServer(true);
         }).catch(error => {
             setServerErrorOccured(true);
         }).finally(() => {
-            setFetchedFromServer(true);
             setLoaderShown(false);
         })
     }
@@ -70,6 +70,7 @@ function Referee(props) {
     function fetchLeagues() {
         getAllLeagues().then(response => {
             setExistingLeagues(response.data.content);
+            fetchReferees();
         }).catch(error => {
             setServerErrorOccured(true);
         })
@@ -79,14 +80,22 @@ function Referee(props) {
         setFetchedFromServer(false);
         setServerErrorOccured(false);
         setLoaderShown(true);
-        fetchReferees();
-        fetchLeagues();
+        if (props.isAdmin) {
+            if (existingLeagues.length === 0) {
+                fetchLeagues();
+            } else {
+                fetchReferees();
+            }
+        } else {
+            fetchReferees();
+        }
     }
 
     useEffect(() => {
-            fetchReferees();
         if (props.isAdmin) {
             fetchLeagues();
+        } else {
+            fetchReferees();
         }
     }, []);
 
@@ -122,51 +131,35 @@ function Referee(props) {
     if (isServerErrorOccurred) {
         return <RetryError retry={() => retryFetchingData()} isActive={true} />
     }
+    if (!isFetchedFromServer) {
+        return <ModalLoader isActive={isLoaderShown} />
+    }
 
-    if (isFetchedFromServer) {
+    if (props.isAdmin) {
         return (
-            <div>
+            <>
                 <ModalLoader isActive={isLoaderShown} />
-                <SearchWithoutButton search={(_search_text) => searchReferees(_search_text)} searchPlaceholder={"Pretražite sudije po imenu"}/>
-                {props.isAdmin?<div className="mr-5 m-5 text-center">
-                    <button className="btn btn-success" onClick={() => setDialogShown(!isDialogShown)}>
-                        <div className="d-flex">
-                            <FontAwesomeIcon className="h4 mr-2 mb-0" icon={faPlusSquare} />Dodaj sudiju
-                        </div>
-                    </button>
-                </div>:null}
-                <div className="container-fluid justify-content-center mt-5 text-center w-75">
-                    <table className="table">
-                        <thead className="bg-primary">
-                        <tr>
-                            <th className="text-light" scope="col">Ime</th>
-                            <th className="text-light" scope="col">Prezime</th>
-                            <th className="text-light" scope="col">Najviša liga</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {shownReferees.map(referee => {
-                            return <RefereeRow referee={referee} isAdmin={props.isAdmin} />
-                        })}
-                        </tbody>
-                    </table>
-                </div>
-                {props.isAdmin?
+                <RefereeHeaderForAdmin searchReferees={(searchText) => {searchReferees(searchText)}}
+                                       setDialogShownEvent={() => setDialogShown(!isDialogShown)} />
+                <RefereeListAdmin referees={shownReferees}/>
                 <CreateRefereeDialog isDialogShown={isDialogShown} referee={refereeInDialog}
                                      closeDialog={() => setDialogShown(!isDialogShown)}
                                      onInputChange={(event) => handleChange(event)}
                                      onValidateForm={(event) => insertNewReferee(event)}
                                      availableLeagues={existingLeagues}
-                                     />
-                :null
-                }
+                />
                 <SuccessAlert alertStyle={successAlertStyle} alertText="Sudija je uspešno sačuvan"/>
                 <ErrorAlert alertStyle={errorAlertStyle} alertText="Sudija nije sačuvan" />
-            </div>
+            </>
         )
     } else {
         return (
-            <ModalLoader isActive={isLoaderShown} />
+            <>
+                <ModalLoader isActive={isLoaderShown} />
+                <RefereeHeader searchReferees={(searchText) => {searchReferees(searchText)}}
+                               setDialogShownEvent={() => setDialogShown(!isDialogShown)} />
+                <RefereeList referees={shownReferees} />
+            </>
         )
     }
 }
