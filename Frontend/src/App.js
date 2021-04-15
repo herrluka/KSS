@@ -13,12 +13,14 @@ import ChangePassword from "./components/users/ChangePassword";
 import Referee from "./components/referees/Referee";
 import RefereeInfo from "./components/referees/RefereeInfo";
 import LeagueRounds from "./components/rounds/LeagueRounds";
+import Matches from "./components/matches/Matches";
 
 function App() {
     return (
         <>
         <Navbar />
         <Switch>
+            <Route path="/rounds/:id/matches" component={Matches} />
             <Route path="/referees/:id" component={RefereeInfo} />
             <Route path="/referees" component={Referee} />
             <Route path="/change-password/:userId" component={ChangePassword} />
