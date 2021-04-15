@@ -107,7 +107,7 @@ function Users(props) {
         }, props.token).then(response => {
             setDialogShown(false);
             showSuccessAlert();
-            retryGettingUsers();
+            fetchData();
         }).catch(error => {
             showErrorAlert();
         }).finally(() => {
@@ -120,7 +120,7 @@ function Users(props) {
         deleteUser(id, props.token).then(response => {
             showSuccessAlert();
             setDeleteDialogShown(false);
-            retryGettingUsers();
+            fetchData();
         }).catch(error => {
             showErrorAlert();
         }).finally(() => {

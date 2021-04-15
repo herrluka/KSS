@@ -1,7 +1,14 @@
 import React, {useState} from 'react';
 import {Link, useHistory} from "react-router-dom";
 import NavbarAuth from "./NavbarAuth";
-import {faBalanceScaleRight, faBasketballBall, faHome, faRunning, faUser} from "@fortawesome/free-solid-svg-icons";
+import {
+    faBalanceScaleRight,
+    faBasketballBall,
+    faHome,
+    faRunning,
+    faUser,
+    faUserFriends
+} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {connect} from "react-redux";
 import roles from "../../../constants";
@@ -31,14 +38,16 @@ function Navbar(props) {
                     {props.isAdmin?
                         <li className="nav-item">
                             <Link to="/users" className="nav-link"><FontAwesomeIcon className="h5 mr-2 mb-0" icon={faUser} />Korisnici</Link>
-                        </li>
-                        :null
+                        </li>:null
                     }
                     <li className="nav-item">
                         <Link to="/leagues" className="nav-link"><FontAwesomeIcon className="h5 mr-2 mb-0" icon={faBasketballBall} />Lige</Link>
-                    </li>:
+                    </li>
                     <li className="nav-item">
                         <Link to="/players" className="nav-link"><FontAwesomeIcon className="h5 mr-2 mb-0" icon={faRunning} />Igrаči</Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/clubs" className="nav-link"><FontAwesomeIcon className="h5 mr-2 mb-0" icon={faUserFriends} />Klubovi</Link>
                     </li>
                     <li className="nav-item">
                         <Link to="/referees" className="nav-link"><FontAwesomeIcon className="h5 mr-2 mb-0" icon={faBalanceScaleRight} />Sudije</Link>

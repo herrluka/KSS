@@ -31,7 +31,7 @@ function InfoCards() {
                             <li>klubova koji igraju</li>
                             <li>u okviru takmičenja KSS</li>
                         </ul>
-                        <Link to="/klubovi" type="button" className="btn btn-lg btn-block btn-primary">Pogledajte klubove</Link>
+                        <Link to="/clubs" type="button" className="btn btn-lg btn-block btn-primary">Pogledajte klubove</Link>
                     </div>
                 </div>
                 <div className="card mb-4 box-shadow">
