@@ -124,4 +124,9 @@ code {
   cursor: pointer;
 }
 
+.match-modal-dialog {
+  overflow: auto;
+  max-height: 80vh;
+  margin: 0px;
+}
 

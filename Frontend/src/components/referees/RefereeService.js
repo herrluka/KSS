@@ -4,6 +4,10 @@ function getAllReferees() {
     return axios.get('/referees');
 }
 
+function getRefereesByRoundId(refereeId, token) {
+    return axios.get('/rounds/' + refereeId + '/referees', {headers: {authorization: token}});
+}
+
 function getRefereeById(refereeId, token) {
     return axios.get('/referees/' + refereeId, {headers: {authorization: token}});
 }
@@ -22,6 +26,7 @@ function deleteReferee(refereeId, token) {
 
 export {
     getAllReferees,
+    getRefereesByRoundId,
     getRefereeById,
     insertReferee,
     updateReferee,

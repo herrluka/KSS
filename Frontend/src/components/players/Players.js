@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import SearchWithButton from "../common/search/SearchWithButton";
 import ModalLoader from "../common/loaders/ModalLoader";
 import RetryError from "../common/errors/RetryError";

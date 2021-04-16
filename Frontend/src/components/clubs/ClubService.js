@@ -4,9 +4,14 @@ function getClubs(token) {
     return axios.get('/clubs', {headers: {authorization: token}})
 }
 
+function getClubsByRoundId(roundId, token) {
+    return axios.get('rounds/' + roundId +'/clubs', {headers: {authorization: token}})
+}
+
 function saveCLub(requestBody, token) {
     return axios.post('/clubs', requestBody, {headers: {authorization: token}})
 }
+
 function updateClub(clubId, requestBody, token) {
     return axios.put('/clubs/' + clubId, requestBody, {headers: {authorization: token}})
 }
@@ -17,6 +22,7 @@ function deleteClub(clubId, token) {
 
 export {
     getClubs,
+    getClubsByRoundId,
     saveCLub,
     updateClub,
     deleteClub,

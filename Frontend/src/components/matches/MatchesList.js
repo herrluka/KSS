@@ -7,33 +7,43 @@ function MatchesList(props) {
                         matchPlayed = false;
                     }
                     return (
-                        <table key={match.id} className="table table-bordered table-dark table-sm w-100 text-center">
-                            <tbody>
-                                {match.odlozeno?<tr className="bg-danger">
-                                    <td colSpan={2} >ODLOZENO</td>
-                                </tr>:null}
-                                <tr>
-                                    <td colSpan={2} >{match.datum_odrzavanja===null?"-":match.datum_odrzavanja}</td>
-                                </tr>
-                                <tr>
-                                    <td className="w-50">{match.klub_A===null?'-':match.klub_A.ime}</td>
-                                    <td className="w-50">{match.klub_B===null?'-':match.klub_B.ime}</td>
-                                </tr>
-                                <tr>
-                                    <td className="w-50">{matchPlayed?match.tim_A_koseva:"-"}</td>
-                                    <td className="w-50">{matchPlayed?match.tim_B_koseva:"-"}</td>
-                                </tr>
-                                <tr className="text-left">
-                                    <td colSpan={2}> Sudije: {match.prvi_sudija===null?'':match.prvi_sudija?.ime + ' ' + match.prvi_sudija?.prezime}
-                                         {match.drugi_sudija===null?'':match.drugi_sudija?.ime + ', ' + match.drugi_sudija?.prezime}</td>
-                                </tr>
-                                <tr className="text-left">
-                                    <td colSpan={2}> Delegat: {match.korisnik===null?'':match.korisnik.ime + ' ' + match.korisnik.prezime}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    )
-                })}
+                        <>
+                            <table key={match.id} className="table table-bordered table-dark table-sm w-100 text-center">
+                                <tbody>
+                                    {match.odlozeno?<tr className="bg-danger">
+                                        <td colSpan={2} >ODLOZENO</td>
+                                    </tr>:null}
+                                    <tr>
+                                        <td colSpan={2} >{match.datum_odrzavanja===null?"-":match.datum_odrzavanja}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="w-50">{match.klub_A===null?'-':match.klub_A.ime}</td>
+                                        <td className="w-50">{match.klub_B===null?'-':match.klub_B.ime}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="w-50">{matchPlayed?match.tim_A_koseva:"-"}</td>
+                                        <td className="w-50">{matchPlayed?match.tim_B_koseva:"-"}</td>
+                                    </tr>
+                                    <tr className="text-left">
+                                        <td colSpan={2}> Sudije: {match.prvi_sudija===null?'':match.prvi_sudija?.ime + ' ' + match.prvi_sudija?.prezime}
+                                             {match.drugi_sudija===null?'':' , ' + match.drugi_sudija?.ime + ' ' + match.drugi_sudija?.prezime}</td>
+                                    </tr>
+                                    <tr className="text-left">
+                                        <td colSpan={2}> Delegat: {match.korisnik===null?'':match.korisnik.ime + ' ' + match.korisnik.prezime}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            {props.isAdmin?
+                                <div className="text-center mb-5">
+                                    <button className="btn btn-primary">Uredi</button>
+                                    <button className="btn btn-danger" onClick={() => props.handleOpenDeleteDialog(match.id)}>Obriši</button>
+                                </div>
+                                :
+                                null
+                            }
+                        </>
+                    )}
+                )}
         </div>
     )
 }

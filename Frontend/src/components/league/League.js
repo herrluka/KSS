@@ -8,9 +8,10 @@ import LeagueDialog from "./LeagueDialog";
 import DeleteDialog from "../common/dialogs/DeleteDialog";
 import SuccessAlert from "../alerts/SuccessAlert";
 import ErrorAlert from "../alerts/ErrorAlert";
-import LeagueListForAdmin from "./LeagueListForAdmin";
+import LeaguesListForAdmin from "./LeaguesListForAdmin";
 import LeaguesHeaderForAdmin from "./LeaguesHeaderForAdmin";
 import LeaguesHeader from "./LeaguesHeader";
+import LeaguesList from "./LeaguesList";
 
 
 function League(props) {
@@ -161,6 +162,7 @@ function League(props) {
             <>
                 <ModalLoader isActive={loaderActive} />
                 <LeaguesHeader leagues={leagues} />
+                <LeaguesList leagues={leagues} />
             </>
         )
     }
@@ -169,9 +171,9 @@ function League(props) {
         <>
             <ModalLoader isActive={loaderActive} />
             <LeaguesHeaderForAdmin openCreateDialogEvent={() => openCreateDialog()} />
-            <LeagueListForAdmin leagues={leagues}
-                                openEditDialogEvent={(_id, _name, _rank) => openEditDialog(_id, _name, _rank)}
-                                openDeleteDialogEvent={(leagueId) => openDeleteDialog(leagueId)}/>
+            <LeaguesListForAdmin leagues={leagues}
+                                 openEditDialogEvent={(_id, _name, _rank) => openEditDialog(_id, _name, _rank)}
+                                 openDeleteDialogEvent={(leagueId) => openDeleteDialog(leagueId)}/>
             <LeagueDialog mode={dialogMode} league={leagueInDialog} isDialogShown={isDialogShown}
                           closeDialog={() => setDialogShown(!isDialogShown)}
                           onInputChange={(event) => handleChange(event)}

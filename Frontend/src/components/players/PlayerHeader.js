@@ -1,5 +1,3 @@
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlusSquare} from "@fortawesome/free-solid-svg-icons";
 
 function PlayerHeader(props) {
     return (
