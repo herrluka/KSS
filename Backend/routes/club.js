@@ -9,9 +9,7 @@ const {body, validationResult} = require('express-validator');
 const handleDBError = require('../help/db_error_handler');
 
 router.get('/', (req, res) => {
-    Club.findAll({
-        attributes: ['naziv_kluba', 'godina_osnivanja', 'adresa_kluba'],
-    }).then(clubs => {
+    Club.findAll().then(clubs => {
         return res.status(200).json({
             content: clubs
         })

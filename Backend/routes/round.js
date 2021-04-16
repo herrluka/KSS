@@ -10,6 +10,8 @@ const authenticationMiddleware = require('../middlewares/auth_middleware');
 const authorizationMiddleware = require('../middlewares/role_middleware');
 const {body, validationResult} = require('express-validator');
 const handleDBError = require('../help/db_error_handler');
+const sequelize = require('../database/connection');
+const Sequelize = require('sequelize');
 
 router.get('/:roundId/matches', (req, res) => {
     Match.findAll({
@@ -105,6 +107,36 @@ router.get('/:roundId/matches', (req, res) => {
         return handleDBError(res, error);
     })
 });
+
+router.get('/:roundId(\\d+)/clubs',
+    (req, res) => {
+        const query = `select DISTINCT(klub.id), klub.naziv_kluba from Utakmica
+                        inner join Klub klub on Utakmica.tim_A_id = klub.id
+                        inner join Kolo kolo on Utakmica.kolo_id = kolo.id
+                        where kolo.liga_id = (select liga_id from Kolo k where k.id =` + req.params.roundId + ')';
+        sequelize.query(query, {type: Sequelize.QueryTypes.SELECT}).then(clubs => {
+            return res.status(200).json({
+                content: clubs
+            })
+        }).catch(error => {
+            return handleDBError(res, error);
+        })
+    });
+
+router.get('/:roundId(\\d+)/referees',
+    (req, res) => {
+        const query = `select id, ime, prezime from Sudija where najvisa_liga in
+                       (select id from Liga where rang >= 
+                       (select rang from Kolo where id = ` + req.params.roundId + '))';
+        sequelize.query(query, {type: Sequelize.QueryTypes.SELECT}).then(clubs => {
+            return res.status(200).json({
+                content: clubs
+            })
+        }).catch(error => {
+            return handleDBError(res, error);
+        })
+    });
+
 
 router.post('',
     body('name').exists(),

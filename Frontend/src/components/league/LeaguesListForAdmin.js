@@ -1,6 +1,6 @@
 import {Link} from "react-router-dom";
 
-function LeagueListForAdmin(props) {
+function LeaguesListForAdmin(props) {
     return (
         <div className="container-fluid text-center align-content-center overflow-auto mb-5 w-50">
             {props.leagues.map(league => {
@@ -22,4 +22,4 @@ function LeagueListForAdmin(props) {
     )
 }
 
-export default LeagueListForAdmin;
+export default LeaguesListForAdmin;
