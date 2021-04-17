@@ -47,7 +47,21 @@ function LeagueRounds(props) {
 
     function fetchData() {
         getRoundsByLeagueId(params.id).then(response => {
-            setStandings(response.data.content.rang_lista.sort((a, b) => a.wins > b.wins && a.total_points > b.total_points))
+            let sortBy = [{
+                prop:'wins',
+                direction: -1
+            },{
+                prop:'total_points',
+                direction: -1
+            }];
+            setStandings(response.data.content.rang_lista.sort(function(a,b){
+                let i = 0, result = 0;
+                while(i < sortBy.length && result === 0) {
+                    result = sortBy[i].direction*(a[ sortBy[i].prop ].toString() < b[ sortBy[i].prop ].toString() ? -1 : (a[ sortBy[i].prop ].toString() > b[ sortBy[i].prop ].toString() ? 1 : 0));
+                    i++;
+                }
+                return result;
+            }));
             setRounds(response.data.content.kola);
             setLeagueInfo({
                 id: response.data.content.liga.id,
