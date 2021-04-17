@@ -45,73 +45,33 @@ router.get('/:playerId',
     authenticationMiddleware,
     isAdmin,
     (req, res) => {
-    Participation.findAll({
-        attributes: ['datum_angazovanja'],
-        where: {
-            igrac_id: req.params.playerId
-        },
-        include: [
-            {
-                model: Player,
-                as: 'igrac',
-                attributes: ['ime', 'prezime', 'datum_rodjenja', 'lekarski_pregled_datum']
-            },
-            {
-                model: Club,
-                as: 'klub',
-                attributes: ['naziv_kluba']
+        Player.findOne({
+            where: {
+                id: req.params.playerId
             }
-        ]
-    }).then(participations => {
-        if (participations.length > 0) {
+        }).then(player => {
+            if (!player) {
+                return res.status(404).json({
+                    content: {
+                        message: 'Player with sent id not found'
+                    }
+                })
+            }
             let responseBody = {};
             responseBody.igrac = {
-                ime: participations[0].igrac.ime,
-                prezime: participations[0].igrac.prezime,
-                datum_rodjenja: participations[0].igrac.datum_rodjenja,
-                lekarski_pregled_datum: participations[0].igrac.lekarski_pregled_datum,
+                'ime': player.ime,
+                'prezime': player.prezime,
+                'datum_rodjenja': player.datum_rodjenja,
+                'lekarski_pregled_datum': player.lekarski_pregled_datum
             };
             responseBody.klubovi = [];
-            participations.forEach(participation => {
-                responseBody.klubovi.push({
-                    id: participation.klub.id,
-                    naziv_kluba: participation.klub.naziv_kluba
-                })
-            });
             return res.status(200).json({
                 content: responseBody
             })
-        } else {
-            Player.findOne({
-                where: {
-                    id: req.params.playerId
-                }
-            }).then(player => {
-                if (!player) {
-                    return res.status(404).json({
-                        content: {
-                            message: 'Player with sent id not found'
-                        }
-                    })
-                }
-                let responseBody = {};
-                responseBody.igrac = {
-                    'ime': player.ime,
-                    'prezime': player.prezime,
-                    'datum_rodjenja': player.datum_rodjenja,
-                    'lekarski_pregled_datum': player.lekarski_pregled_datum
-                };
-                responseBody.klubovi = [];
-                return res.status(200).json({
-                    content: responseBody
-                })
-            }).catch(error => {
-                return handleDBError(res, error);
-            })
-        }
-    }).catch(error => {
-        return handleDBError(res, error);
-    });
+        }).catch(error => {
+            return handleDBError(res, error);
+        })
+
 });
 
 router.post('/',

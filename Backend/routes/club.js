@@ -7,6 +7,7 @@ const authenticationMiddleware = require('../middlewares/auth_middleware');
 const isAdmin = require('../middlewares/role_middleware');
 const {body, validationResult} = require('express-validator');
 const handleDBError = require('../help/db_error_handler');
+const Sequelize = require('sequelize');
 
 router.get('/', (req, res) => {
     Club.findAll().then(clubs => {
@@ -19,21 +20,55 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:clubId/players',
-    authenticationMiddleware,
-    isAdmin, (req, res) => {
+    (req, res) => {
         Participation.findAll({
             attributes: ['id', 'datum_angazovanja'],
             where: {
                 klub_id: req.params.clubId
             },
-            include: {
-                model: Player,
-                as: 'igrac'
-            }
+            include: [
+                {
+                    model: Player,
+                    as: 'igrac',
+                    attributes: ['id', 'ime', 'prezime']
+                },
+                {
+                    model: Club,
+                    as: 'klub',
+                    attributes: ['id', 'naziv_kluba']
+                },
+            ]
         }).then(participations => {
-            return res.status(200).json({
-                content: participations
-            })
+            let responseBody = {};
+            responseBody.klub = {
+                id: participations[0].klub.id,
+                naziv_kluba: participations[0].klub.naziv_kluba,
+            };
+            responseBody.igraci_u_klubu = [];
+            let playersInClubIds = [];
+            participations.forEach(participation => {
+                playersInClubIds.push(participation.igrac.id);
+                responseBody.igraci_u_klubu.push({
+                    id: participation.id,
+                    igrac_id: participation.igrac.id,
+                    ime: participation.igrac.ime,
+                    prezime: participation.igrac.prezime,
+                    datum_angazovanja: participation.datum_angazovanja,
+                })
+            });
+            Player.findAll({
+                attributes: ['id', 'ime', 'prezime'],
+                where : {
+                    id: {[Sequelize.Op.notIn]: playersInClubIds}
+                }
+            }).then(players => {
+                responseBody.igraci_za_angazovanje = players;
+                return res.status(200).json({
+                    content: responseBody
+                })
+            }).catch(error => {
+                return handleDBError(res, error);
+            });
         }).catch(error => {
             return handleDBError(res, error);
         })
