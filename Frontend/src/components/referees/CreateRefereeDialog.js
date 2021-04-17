@@ -40,7 +40,7 @@ function CreateRefereeDialog(props) {
                                     <select className="form-control" name="league"
                                            onChange={event => props.onInputChange(event)} required
                                             value={props.referee.league}>
-                                        <option key='0' selected value={null}>{''}</option>
+                                        <option key='' selected value=''>{''}</option>
                                         {props.availableLeagues.map(league => {
                                             return <option key={league.id} value={league.id}>{league.naziv_lige}</option>
                                         })}

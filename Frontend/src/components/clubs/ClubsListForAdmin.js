@@ -1,3 +1,6 @@
+import {faArrowRight} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {Link} from "react-router-dom";
 
 function ClubsListForAdmin(props) {
     return (
@@ -9,6 +12,7 @@ function ClubsListForAdmin(props) {
                     <th className="text-light" scope="col">Godina osnivanja</th>
                     <th className="text-light" scope="col">Adresa</th>
                     <th className="text-light" scope="col">Broj telefona</th>
+                    <th className="text-light" scope="col">Igrači</th>
                     <th className="text-light" scope="col">Operacije</th>
                 </tr>
                 </thead>
@@ -20,6 +24,11 @@ function ClubsListForAdmin(props) {
                             <td>{_club.godina_osnivanja}</td>
                             <td>{_club.adresa_kluba}</td>
                             <td>{_club.broj_telefona}</td>
+                            <td>
+                                <Link to={"clubs/" + _club.id + "/players"} className="btn btn-success">
+                                    <FontAwesomeIcon className="h6 mr-2 mb-0" icon={faArrowRight} />Igrači
+                                </Link>
+                            </td>
                             <td>
                                 <button className="btn btn-primary"
                                         onClick={() => props.openEditDialogEvent(_club.id, _club.naziv_kluba,

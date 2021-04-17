@@ -143,6 +143,7 @@ function PlayerInfo(props) {
                                 <input type="date" className="form-control" id="medicalExaminationDate"
                                        name="medical_examination" value={player.medical_examination} onChange={handleChange} required />
                             </div>
+
                             <button type="submit" className="btn btn-primary" disabled={buttonsDisabled}>Sačuvaj</button>
                             <button type="button" className="btn btn-danger ml-2" disabled={buttonsDisabled} onClick={() => setDialogShown(!isDialogShown)}>Obriši</button>
                         </form>

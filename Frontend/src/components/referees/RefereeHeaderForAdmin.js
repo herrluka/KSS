@@ -5,7 +5,7 @@ import SearchWithoutButton from "../common/search/SearchWithoutButton";
 function RefereeHeaderForAdmin(props) {
     return (
         <>
-            <h1 className="text-center m-5">Korisnici</h1>
+            <h1 className="text-center pt-4 mb-5">Sudije</h1>
             <div className="m-5 text-center">
                 <button className="btn btn-success" onClick={() => props.setDialogShownEvent()}>
                     <div className="d-flex">

@@ -1,8 +1,8 @@
 
 function PlayerHeader(props) {
     return (
-        <div className="mr-5 m-5 text-center">
-            <h1 className="my-5">Igrači</h1>
+        <div className="pt-4 mb-5 text-center">
+            <h1>Igrači</h1>
         </div>
     )
 }

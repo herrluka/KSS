@@ -5,7 +5,6 @@ function getPlayersByName(playerName) {
 }
 
 function getPlayerById(playerId, _token) {
-    console.log(_token);
     return axios.get('players/' + playerId, {headers: {Authorization: _token}});
 }
 

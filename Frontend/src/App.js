@@ -15,6 +15,7 @@ import RefereeInfo from "./components/referees/RefereeInfo";
 import LeagueRounds from "./components/rounds/LeagueRounds";
 import Matches from "./components/matches/Matches";
 import Clubs from "./components/clubs/Clubs";
+import Contract from "./components/contract/Contract";
 
 function App() {
     return (
@@ -28,6 +29,7 @@ function App() {
             <Route path="/users/" component={Users} />
             <Route path="/players/:id" component={PlayerInfo} />
             <Route path="/players" component={Players} />
+            <Route path="/clubs/:id/players" component={Contract} />
             <Route path="/clubs" component={Clubs} />
             <Route path="/leagues/:id" component={LeagueRounds} />
             <Route path="/leagues" component={League} />

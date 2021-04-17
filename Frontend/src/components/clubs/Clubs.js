@@ -19,7 +19,7 @@ function Clubs(props) {
 
     const [clubs, setClubs] = useState([]);
     const [shownClubs, setShownClubs] = useState([]);
-    const [loaderActive, setLoaderActive] = useState(true);
+    const [loaderActive, setLoaderActive] = useState(false);
     const [dialogMode, setDialogMode] = useState('CREATE');
     const [isServerErrorOccurred, setServerErrorOccurred] = useState(false);
     const [isDialogShown, setDialogShown] = useState(false);
@@ -41,7 +41,6 @@ function Clubs(props) {
         getClubs(props.token).then(response => {
             setClubs(response.data.content);
             setContentLoaded(true);
-            setLoaderActive(false);
             setShownClubs(response.data.content);
         }).catch(error => {
             setServerErrorOccurred(true);
@@ -195,7 +194,7 @@ function Clubs(props) {
     }
 
     if (!isContentLoaded) {
-        return <ModalLoader isActive={loaderActive} />
+        return <ModalLoader isActive={true} />
     }
 
     if (props.isAdmin) {
@@ -222,7 +221,7 @@ function Clubs(props) {
     } else {
         return (
             <>
-                <ModalLoader isActive={true} />
+                <ModalLoader isActive={loaderActive} />
                 <ClubHeader />
                 <SearchWithoutButton searchPlaceholder="Pretražite klubove po nazivu" search={(searchText) => searchClubs(searchText)} />
                 <ClubsList clubs={shownClubs} />
