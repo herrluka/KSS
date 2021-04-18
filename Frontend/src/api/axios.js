@@ -6,10 +6,11 @@ const instance = axios.create({
     }
 );
 instance.interceptors.response.use(response => {
-    if (response.status === 401) {
-        console.log('AUTH!');
-    }
     return response;
+}, error => {
+    if (error.response.status === 401) {
+        window.location.href = '/login';
+    }
 });
 
 export default instance;

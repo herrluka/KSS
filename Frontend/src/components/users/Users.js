@@ -14,7 +14,6 @@ import UserHeader from "./UserHeader";
 
 
 function Users(props) {
-
     const [users, setUsers] = useState([]);
     const [loaderActive, setLoaderActive] = useState(true);
     const [isServerErrorOccurred, setServerErrorOccurred] = useState(false);

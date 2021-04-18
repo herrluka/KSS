@@ -10,6 +10,7 @@ function PlayersList(props) {
                         <th className="text-light" scope="col">Ime</th>
                         <th className="text-light" scope="col">Prezime</th>
                         <th className="text-light" scope="col">Datum rodjenja</th>
+                        {props.isAdmin?<th className="text-light" scope="col">Operacije</th>:null}
                     </tr>
                     </thead>
                     <tbody>
@@ -19,8 +20,8 @@ function PlayersList(props) {
                                 <td>{player.ime}</td>
                                 <td>{player.prezime}</td>
                                 <td>{player.datum_rodjenja}</td>
-                                {props.isAdmin?<td className="border-top-0 text-left w-15">
-                                    <Link to={'players/' + player.id} type={'button'}>
+                                {props.isAdmin?<td className="text-center">
+                                    <Link to={'players/' + player.id} className="btn btn-success">
                                         Više detalja
                                     </Link>
                                 </td>:null}
