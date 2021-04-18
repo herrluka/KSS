@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {useParams} from 'react-router-dom';
 import MatchesList from "./MatchesList";
-import {getMatchesByRoundId, insertMatch, deleteMatch} from './MatchService';
+import {getMatchesByRoundId, insertMatch, updateMatch, deleteMatch} from './MatchService';
 import MatchesHeader from "./MatchesHeader";
 import {connect} from "react-redux";
 import roles from "../../constants";
@@ -28,16 +28,18 @@ function Matches(props) {
     const [isContentLoaded, setContentLoaded] = useState(false);
     const [isLoaderActive, setLoaderActive] = useState(false);
     const [isDialogShown, setDialogShown] = useState(false);
+    const [dialogMode, setDialogMode] = useState(null);
     const [isDeleteDialogShown, setDeleteDialogShown] = useState(false);
     const [matchInDialog, setMatchInDialog] = useState({
-       homeTeam: '',
-       guestTeam: '',
-       homeTeamPoints: 0,
-       guestTeamPoints: 0,
-       firstRefereeId: '',
-       secondRefereeId: '',
-       postponed: false,
-       matchDate: '',
+        id: null,
+        homeTeam: '',
+        guestTeam: '',
+        homeTeamPoints: 0,
+        guestTeamPoints: 0,
+        firstRefereeId: '',
+        secondRefereeId: '',
+        matchDate: '',
+        postponed: false,
     });
     const [round, setRound] = useState({
         id: null,
@@ -173,26 +175,59 @@ function Matches(props) {
     function saveMatch(event) {
         event.preventDefault();
         setLoaderActive(true);
-        insertMatch({
-            team_A_id: matchInDialog.homeTeam===''?null:matchInDialog.homeTeam,
-            team_B_id: matchInDialog.guestTeam===''?null:matchInDialog.guestTeam,
-            team_A_points: matchInDialog.homeTeamPoints===''?0:matchInDialog.homeTeamPoints,
-            team_B_points: matchInDialog.guestTeamPoints===''?0:matchInDialog.guestTeamPoints,
-            date_played: matchInDialog.matchDate,
-            round_id: params.id,
-            user_updated_id: props.userId,
-            isPostponed: matchInDialog.postponed,
-            first_referee_id: matchInDialog.firstRefereeId===''?null:matchInDialog.firstRefereeId,
-            second_referee_id: matchInDialog.secondRefereeId===''?null:matchInDialog.secondRefereeId,
-        }, props.token).then(response => {
-            showSuccessAlert();
-            setDialogShown(false);
-            fetchData();
-        }).catch(error => {
-            showErrorAlert();
-        }).finally(() => {
-            setLoaderActive(false);
-        })
+        if (dialogMode === 'CREATE') {
+            insertMatch({
+                team_A_id: matchInDialog.homeTeam===''?null:matchInDialog.homeTeam,
+                team_B_id: matchInDialog.guestTeam===''?null:matchInDialog.guestTeam,
+                team_A_points: matchInDialog.homeTeamPoints===''?0:matchInDialog.homeTeamPoints,
+                team_B_points: matchInDialog.guestTeamPoints===''?0:matchInDialog.guestTeamPoints,
+                date_played: matchInDialog.matchDate===''?null:matchInDialog.matchDate,
+                round_id: params.id,
+                user_updated_id: props.userId,
+                isPostponed: matchInDialog.postponed,
+                first_referee_id: matchInDialog.firstRefereeId===''?null:matchInDialog.firstRefereeId,
+                second_referee_id: matchInDialog.secondRefereeId===''?null:matchInDialog.secondRefereeId,
+            }, props.token).then(response => {
+                showSuccessAlert();
+                setDialogShown(false);
+                fetchData();
+            }).catch(error => {
+                showErrorAlert();
+            }).finally(() => {
+                setLoaderActive(false);
+            })
+        } else {
+            let requestBody;
+            if (props.isDelegate) {
+                requestBody = {
+                    team_A_points: matchInDialog.homeTeamPoints===''?0:matchInDialog.homeTeamPoints,
+                    team_B_points: matchInDialog.guestTeamPoints===''?0:matchInDialog.guestTeamPoints,
+                    user_updated_id: props.userId,
+                }
+            } else {
+                requestBody =  {
+                    team_A_id: matchInDialog.homeTeam===undefined||matchInDialog.homeTeam===''?null:matchInDialog.homeTeam,
+                    team_B_id: matchInDialog.guestTeam===undefined||matchInDialog.guestTeam===''?null:matchInDialog.guestTeam,
+                    team_A_points: matchInDialog.homeTeamPoints===''?0:matchInDialog.homeTeamPoints,
+                    team_B_points: matchInDialog.guestTeamPoints===''?0:matchInDialog.guestTeamPoints,
+                    date_played: matchInDialog.matchDate,
+                    round_id: params.id,
+                    user_updated_id: props.userId,
+                    isPostponed: matchInDialog.postponed,
+                    first_referee_id: matchInDialog.firstRefereeId===undefined?null:matchInDialog.firstRefereeId,
+                    second_referee_id: matchInDialog.secondRefereeId===undefined?null:matchInDialog.secondRefereeId,
+                }
+            }
+            updateMatch(matchInDialog.id, requestBody, props.token).then(response => {
+                showSuccessAlert();
+                setDialogShown(false);
+                fetchData();
+            }).catch(error => {
+                showErrorAlert();
+            }).finally(() => {
+                setLoaderActive(false);
+            })
+        }
     }
 
     function confirmDelete() {
@@ -206,6 +241,22 @@ function Matches(props) {
         }).finally(() => {
             setLoaderActive(false);
         })
+    }
+
+    function handleOpenEditDialog(matchId, matchHomeTeam, matchGuestTeam, homeTeamPoints, guestTeamPoints, firstReferee, secondReferee, user, matchDate, postponed) {
+        setMatchInDialog({
+            id: matchId,
+            homeTeam: matchHomeTeam?.id,
+            guestTeam: matchGuestTeam?.id,
+            homeTeamPoints: homeTeamPoints,
+            guestTeamPoints: guestTeamPoints,
+            firstRefereeId: firstReferee?.id,
+            secondRefereeId: secondReferee?.id,
+            postponed: postponed,
+            matchDate: matchDate,
+        });
+        setDialogShown(true);
+        setDialogMode('EDIT');
     }
 
     useEffect(() => {
@@ -227,13 +278,17 @@ function Matches(props) {
     return (
         <>
             <ModalLoader isActive={isLoaderActive} />
-            <MatchesHeader round={round} setDialogShownEvent={() => setDialogShown(!isDialogShown)}/>
-            <MatchesList matches={matches} isAdmin={props.isAdmin}
-                         handleOpenDeleteDialog={(matchId) => handleOpenDeleteDialog(matchId) }/>
+            <MatchesHeader isAdmin={props.isAdmin} round={round} setDialogShownEvent={() => {setDialogShown(!isDialogShown);setDialogMode('CREATE');}}/>
+            <MatchesList matches={matches} isAdmin={props.isAdmin} isDelegate={props.isDelegate}
+                         handleOpenDeleteDialog={(matchId) => handleOpenDeleteDialog(matchId) }
+                         handleOpenEditDialog={(matchId, matchHomeTeam, matchGuestTeam, homeTeamPoints,
+                                                guestTeamPoints, firstReferee, secondReferee, user, matchDate, postponed) =>
+                             handleOpenEditDialog(matchId, matchHomeTeam, matchGuestTeam, homeTeamPoints,
+                                 guestTeamPoints, firstReferee, secondReferee, user, matchDate, postponed)}/>
             <DeleteDialog isDialogShown={isDeleteDialogShown} whatToDelete={'utakmicu'}
                           closeDialog={() => setDeleteDialogShown(!isDeleteDialogShown)}
                           confirmDelete={() => confirmDelete()}/>
-            <MatchDialog referees={compatibleReferees}
+            <MatchDialog referees={compatibleReferees} mode={dialogMode} isAdmin={props.isAdmin}
                          homeTeamChoices={homeTeamChoices} guestTeamChoices={guestTeamChoices}
                          firstRefereeChoices={firstRefereeChoices} secondRefereeChoices={secondRefereeChoices}
                          isDialogShown={isDialogShown}

@@ -9,6 +9,7 @@ function RefereeListAdmin(props) {
                     <th className="text-light" scope="col">Ime</th>
                     <th className="text-light" scope="col">Prezime</th>
                     <th className="text-light" scope="col">Najviša liga</th>
+                    <th className="text-light" scope="col">Operacije</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -18,11 +19,13 @@ function RefereeListAdmin(props) {
                             <td>{referee.ime}</td>
                             <td>{referee.prezime}</td>
                             <td><Link to={"/leagues/" + referee.liga.id} className="text-dark">{referee.liga.naziv_lige}</Link></td>
-                            {props.isAdmin?<td className="border-top-0 text-left w-15">
-                                <Link to={'/referees/' + referee.id} type={'button'}>
-                                    Više detalja
-                                </Link>
-                            </td>:null}
+                            {props.isAdmin?
+                                <td className="text-center">
+                                    <Link to={'/referees/' + referee.id} className="btn btn-success" >
+                                        Više detalja
+                                    </Link>
+                                </td>
+                                :null}
                         </tr>
                     )
                 })}

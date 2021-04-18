@@ -141,7 +141,7 @@ function Referee(props) {
                 <ModalLoader isActive={isLoaderShown} />
                 <RefereeHeaderForAdmin searchReferees={(searchText) => {searchReferees(searchText)}}
                                        setDialogShownEvent={() => setDialogShown(!isDialogShown)} />
-                <RefereeListAdmin referees={shownReferees}/>
+                <RefereeListAdmin referees={shownReferees} isAdmin={props.isAdmin}/>
                 <CreateRefereeDialog isDialogShown={isDialogShown} referee={refereeInDialog}
                                      closeDialog={() => setDialogShown(!isDialogShown)}
                                      onInputChange={(event) => handleChange(event)}

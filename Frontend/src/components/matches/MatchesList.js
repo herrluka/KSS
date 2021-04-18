@@ -28,15 +28,28 @@ function MatchesList(props) {
                                         <td colSpan={2}> Sudije: {match.prvi_sudija===null?'':match.prvi_sudija?.ime + ' ' + match.prvi_sudija?.prezime}
                                              {match.drugi_sudija===null?'':' , ' + match.drugi_sudija?.ime + ' ' + match.drugi_sudija?.prezime}</td>
                                     </tr>
-                                    <tr className="text-left">
-                                        <td colSpan={2}> Delegat: {match.korisnik===null?'':match.korisnik.ime + ' ' + match.korisnik.prezime}</td>
-                                    </tr>
+                                    {props.isAdmin ? <tr className="text-left">
+                                        <td colSpan={2}> Ažurirao: {match.korisnik === null ? '' : match.korisnik.ime + ' ' + match.korisnik.prezime}</td>
+                                    </tr>:null
+                                    }
                                 </tbody>
                             </table>
-                            {props.isAdmin?
+                            {props.isAdmin||props.isDelegate?
                                 <div className="text-center mb-5">
-                                    <button className="btn btn-primary">Uredi</button>
-                                    <button className="btn btn-danger" onClick={() => props.handleOpenDeleteDialog(match.id)}>Obriši</button>
+                                    <button className="btn btn-primary"
+                                            onClick={() => props.handleOpenEditDialog(match.id, match.klub_A,
+                                                                                      match.klub_B, match.tim_A_koseva,
+                                                                                      match.tim_B_koseva, match.prvi_sudija,
+                                                                                      match.drugi_sudija, match.korisnik,
+                                                                                      match.datum_odrzavanja, match.odlozeno)}>
+                                        Uredi
+                                    </button>
+                                    {props.isAdmin ?
+                                        <button className="btn btn-danger"
+                                                onClick={() => props.handleOpenDeleteDialog(match.id)}>Obriši</button>
+                                        :
+                                        null
+                                    }
                                 </div>
                                 :
                                 null
