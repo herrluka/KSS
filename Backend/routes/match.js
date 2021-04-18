@@ -5,6 +5,7 @@ const authenticationMiddleware = require('../middlewares/auth_middleware');
 const isAdmin = require('../middlewares/role_middleware');
 const {body, validationResult} = require('express-validator');
 const handleDBError = require('../help/db_error_handler');
+const roles = require("../help/roles");
 
 router.post('',
     body('team_A_points').exists(),
@@ -58,27 +59,36 @@ router.post('',
     });
 
 router.put('/:matchId',
-    body('team_A_points').exists(),
-    body("team_B_points").exists(),
-    body("date_played").exists(),
-    body('first_referee_id').exists(),
-    body('second_referee_id').exists(),
-    body('team_A_id').exists(),
-    body('team_B_id').exists(),
-    body('round_id').isInt(),
-    body('user_updated_id').exists(),
-    body('isPostponed').isBoolean(),
     authenticationMiddleware,
-    isAdmin,
     (req, res) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(422).json({
-                content: {
-                    message: 'Bad request body'
-                }
-            })
-        }
+       if (req.role === roles.ADMIN) {
+           if (req.body.team_A_points === undefined ||
+               req.body.team_B_points === undefined ||
+               req.body.date_played === undefined ||
+               req.body.first_referee_id === undefined ||
+               req.body.second_referee_id === undefined||
+               req.body.team_A_id === undefined ||
+               req.body.team_B_id === undefined ||
+               req.body.round_id === undefined ||
+               req.body.user_updated_id === undefined ||
+               req.body.isPostponed === undefined) {
+               return res.status(422).json({
+                   content: {
+                       message: 'Bad request body'
+                   }
+               })
+           }
+       } else if (req.role === roles.DELEGATE) {
+           if (req.body.team_A_points === undefined ||
+               req.body.team_B_points === undefined ||
+               req.body.user_updated_id === undefined) {
+               return res.status(422).json({
+                   content: {
+                       message: 'Bad request body'
+                   }
+               })
+           }
+       }
         Match.findOne({
             where: {
                 id: req.params.matchId
