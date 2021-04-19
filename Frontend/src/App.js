@@ -45,19 +45,19 @@ function App(props) {
         <>
         <Navbar />
         <Switch>
-            <Route path="/rounds/:id/matches" component={Matches} />
-            <Route path="/referees/:id" component={RefereeInfo} />
-            <Route path="/referees" component={Referee} />
-            <Route path="/change-password/:userId" component={ChangePassword} />
-            <Route path="/users/" component={Users} />
-            <Route path="/players/:id" component={PlayerInfo} />
-            <Route path="/players" component={Players} />
-            <Route path="/clubs/:id/players" component={Contract} />
-            <Route path="/clubs" component={Clubs} />
-            <Route path="/leagues/:id" component={LeagueRounds} />
-            <Route path="/leagues" component={League} />
-            <Route path="/login" component={Login} />
-            <Route path="/register" component={Register} />
+            <Route path="/rounds/:id/matches" exact component={Matches} />
+            <Route path="/referees/:id" exact component={RefereeInfo} />
+            <Route path="/referees" exact component={Referee} />
+            <Route path="/change-password/:userId" exact component={ChangePassword} />
+            <Route path="/users/" exact component={Users} />
+            <Route path="/players/:id" exact component={PlayerInfo} />
+            <Route path="/players" exact component={Players} />
+            <Route path="/clubs/:id/players" exact component={Contract} />
+            <Route path="/clubs" exact component={Clubs} />
+            <Route path="/leagues/:id" exact component={LeagueRounds} />
+            <Route path="/leagues" exact component={League} />
+            <Route path="/login" exact component={Login} />
+            <Route path="/register" exact component={Register} />
             <Route path="/" exact component={HomePage} />
             <Route component={NotFoundPage} />
         </Switch>

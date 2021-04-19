@@ -39,6 +39,13 @@ router.get('/:clubId/players',
                 },
             ]
         }).then(participations => {
+            if (participations.length === 0) {
+                return res.status(404).json({
+                    content: {
+                        message: 'Club with sent id not found'
+                    }
+                })
+            }
             let responseBody = {};
             responseBody.klub = {
                 id: participations[0].klub.id,

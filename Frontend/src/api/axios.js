@@ -10,6 +10,8 @@ instance.interceptors.response.use(response => {
 }, error => {
     if (error.response.status === 401) {
         window.location.href = '/login';
+    } else if (error.response.status === 404) {
+        window.location.href = '/error';
     }
 });
 

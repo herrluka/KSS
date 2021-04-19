@@ -36,6 +36,13 @@ router.get('/:leagueId/rounds',
             },
             order: ['datum_od']
         }).then(rounds => {
+            if (rounds.length === 0) {
+                return res.status(404).json({
+                    content: {
+                        message: 'League with sent id not found'
+                    }
+                })
+            }
             let responseBody = {};
             responseBody.liga = {
                 liga_id: rounds[0].liga.id,

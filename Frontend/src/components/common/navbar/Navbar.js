@@ -20,6 +20,8 @@ function Navbar(props) {
 
     function logout() {
         props.setAuthData();
+        localStorage.removeItem('Token');
+        localStorage.removeItem('userName');
         history.push("/");
     }
 

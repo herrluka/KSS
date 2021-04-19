@@ -60,6 +60,13 @@ router.get('/:roundId/matches', (req, res) => {
         },
         order: ['datum_odrzavanja']
     }).then(matches => {
+        if (matches.length === 0) {
+            return res.status(404).json({
+                content: {
+                    message: 'Round with sent id not found'
+                }
+            })
+        }
         let responseBody = {};
         responseBody.kolo = {
             kolo_id: matches[0].kolo.id,

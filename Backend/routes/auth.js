@@ -177,26 +177,29 @@ router.delete('/unregister/:userId',
 
 router.get('/validate-token', (req, res) => {
     if (!req.headers.authorization) {
-        return res.status(403).json({
+        return res.status(200).json({
             content: {
-                message: 'Not authorized'
+                userId: null,
+                role: null
             }
         })
     }
     const token = req.headers.authorization.split(' ')[1];
     if (!token) {
-        return res.status(403).json({
+        return res.status(200).json({
             content: {
-                message: 'Token not provided'
+                userId: null,
+                role: null
             }
         })
     }
 
     jwt.verify(token, process.env.JWT_SECRET_KEY, (err, result) => {
         if (err) {
-            return res.status(403).json({
+            return res.status(200).json({
                 content: {
-                    message: 'Token not valid'
+                    userId: null,
+                    role: null
                 }
             })
         } else {
