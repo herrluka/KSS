@@ -37,6 +37,8 @@ function Login(props) {
                     role: response.data.content.role,
                     id: response.data.content.id,
                 });
+                localStorage.setItem('Token', response.data.content.token);
+                localStorage.setItem('userName', response.data.content.name);
                 history.push('/');
             }
         }).catch(error => {

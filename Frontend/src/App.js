@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import HomePage from "./components/home/Home";
 import NotFoundPage from "./NotFoundPage";
 import Navbar from "./components/common/navbar/Navbar";
@@ -16,8 +16,31 @@ import LeagueRounds from "./components/rounds/LeagueRounds";
 import Matches from "./components/matches/Matches";
 import Clubs from "./components/clubs/Clubs";
 import Contract from "./components/contract/Contract";
+import axios from "./api/axios";
+import {connect} from "react-redux";
 
-function App() {
+function App(props) {
+
+    useEffect(() => {
+        const token = localStorage.getItem('Token');
+        const userName = localStorage.getItem('userName');
+        axios.get('/auth/validate-token', {headers: {authorization: 'Bearer ' + token}}).then(response => {
+            props.setAuthData({
+                userId: response.data.content.userId,
+                role: response.data.content.role,
+                userName: userName,
+                token: token
+            });
+        }).catch(error => {
+            props.setAuthData({
+                userId: null,
+                role: null,
+                userName: null,
+                token: null
+            })
+        });
+    });
+
     return (
         <>
         <Navbar />
@@ -42,4 +65,17 @@ function App() {
     )
 }
 
-export default App;
+function mapDispatchToProps(dispatch) {
+
+    return {
+        setAuthData: (user) => {
+            dispatch({
+                type: 'SET_AUTH_FIELDS', token: user.token,
+                userName: user.userName, role: user.role,
+                userId: user.id
+            })
+        }
+    }
+}
+
+export default connect(null, mapDispatchToProps)(App);
