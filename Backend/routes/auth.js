@@ -175,4 +175,39 @@ router.delete('/unregister/:userId',
         });
     }));
 
+router.get('/validate-token', (req, res) => {
+    if (!req.headers.authorization) {
+        return res.status(403).json({
+            content: {
+                message: 'Not authorized'
+            }
+        })
+    }
+    const token = req.headers.authorization.split(' ')[1];
+    if (!token) {
+        return res.status(403).json({
+            content: {
+                message: 'Token not provided'
+            }
+        })
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, result) => {
+        if (err) {
+            return res.status(403).json({
+                content: {
+                    message: 'Token not valid'
+                }
+            })
+        } else {
+            return res.status(200).json({
+                content: {
+                    userId: result.id,
+                    role: result.role
+                }
+            })
+        }
+    });
+});
+
 module.exports = router;
