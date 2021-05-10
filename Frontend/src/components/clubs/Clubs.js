@@ -120,7 +120,14 @@ function Clubs(props) {
         }, props.token).then(response => {
             setDialogShown(false);
             showSuccessAlert();
-            fetchData();
+            setClubs([
+                ...clubs,
+                response.data.content.club
+            ]);
+            setShownClubs([
+                ...shownClubs,
+                response.data.content.club
+            ]);
         }).catch(error => {
             showErrorAlert();
         }).finally(() => {
@@ -214,8 +221,8 @@ function Clubs(props) {
                                closeDialog={() => setDeleteDialogShown(!isDeleteDialogShown)}
                 whatToDelete="korisnika"
                 confirmDelete={() => deleteExistingClub(deleteDialogCLubId)}/>
-                <SuccessAlert alertStyle={successAlertStyle} alertText="Uspešno ažuriran korisnik!" />
-                <ErrorAlert alertStyle={errorAlertStyle} alertText="Korisnik nije ažuriran!" />
+                <SuccessAlert alertStyle={successAlertStyle} alertText="Uspešno ažuriran klub!" />
+                <ErrorAlert alertStyle={errorAlertStyle} alertText="Klub nije ažuriran!" />
             </>
         )
     } else {

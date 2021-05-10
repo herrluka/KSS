@@ -111,7 +111,10 @@ function League(props) {
         createLeague(leagueInDialog, props.token).then(response => {
             setDialogShown(false);
             showSuccessAlert();
-            retryGettingLeagues();
+            setLeagues([
+                ...leagues,
+                response.data.content.league
+            ])
         }).catch(error => {
             showErrorAlert();
         }).finally(() => {

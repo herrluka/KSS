@@ -1,12 +1,10 @@
 function handleDBError(res, error) {
     if (!error.parent) {
         console.log(error);
-        res.status(500).json({
+        return res.status(500).json({
             content: {
                 message: 'Internal server error'
             }
-        });
-        res.send({
         });
     }
     if (error.parent.code === 'ETIMEDOUT'){

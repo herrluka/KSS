@@ -195,7 +195,11 @@ function LeagueRounds(props) {
             }, props.token).then(response => {
                 showSuccessAlert();
                 setEditDialogShown(false);
-                fetchData();
+                setRounds([
+                    ...rounds,
+                    response.data.content.round
+                ]);
+                setLoaderShown(false);
             }).catch(error => {
                 showErrorAlert();
                 setLoaderShown(false);
