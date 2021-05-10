@@ -94,6 +94,8 @@ router.post('/register',
         }).then(result => {
             let newUser = result.dataValues;
             newUser.id = result.null;
+            delete newUser.korisnicko_ime;
+            delete newUser.lozinka;
             return res.status(201).json({
                 content: {
                     message: "OK",
