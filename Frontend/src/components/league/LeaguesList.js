@@ -1,15 +1,20 @@
 import {Link} from "react-router-dom";
+import {faBasketballBall} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import React from "react";
 
 function LeaguesList(props) {
     return (
-        <div className="container-fluid align-content-center overflow-auto mb-5 w-50">
+        <div className="container-fluid align-content-center overflow-auto mb-5 text-center">
             {props.leagues.map(league => {
                 return (
-                    <div key={league.id} className="text-center">
-                        <h5>
-                            <Link to={"leagues/" + league.id}>{league.naziv_lige}</Link>
-                        </h5>
-                    </div>
+                    <Link key={league.id} to={"leagues/" + league.id} className="btn btn-dark w-75 m-1 ">
+                        <div className="d-flex justify-content-between">
+                            <FontAwesomeIcon className="h4 mr-2 mb-0" icon={faBasketballBall} />
+                            <span className="h4">{league.naziv_lige}</span>
+                            <FontAwesomeIcon className="h4 mr-2 mb-0" icon={faBasketballBall} />
+                        </div>
+                    </Link>
                 )
             })}
         </div>

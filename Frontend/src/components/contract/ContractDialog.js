@@ -79,6 +79,11 @@ function ContractDialog(props) {
                                 <label className="text-danger text-center font-weight-bold w-100">Morate da izaberete igrača</label>
                                     :null
                                 }
+                                {props.validationError?
+                                    <div className="form-group">
+                                        <label className="text-danger">{props.validationError}</label>
+                                    </div>:null
+                                }
                             </div>
                             <div className="modal-footer">
                                 <input type="button" className="btn btn-default" data-dismiss="modal" value="Napusti"

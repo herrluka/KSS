@@ -25,12 +25,21 @@ function App(props) {
         const token = localStorage.getItem('Token');
         const userName = localStorage.getItem('userName');
         axios.get('/auth/validate-token', {headers: {authorization: 'Bearer ' + token}}).then(response => {
-            props.setAuthData({
-                userId: response.data.content.userId,
-                role: response.data.content.role,
-                userName: userName,
-                token: token
-            });
+            if(!response.data.content.userId) {
+                props.setAuthData({
+                    userId: null,
+                    role: null,
+                    userName: null,
+                    token: null
+                });
+            } else {
+                props.setAuthData({
+                    userId: response.data.content.userId,
+                    role: response.data.content.role,
+                    userName: userName,
+                    token: token
+                });
+            }
         }).catch(error => {
             props.setAuthData({
                 userId: null,
@@ -66,13 +75,12 @@ function App(props) {
 }
 
 function mapDispatchToProps(dispatch) {
-
     return {
         setAuthData: (user) => {
             dispatch({
                 type: 'SET_AUTH_FIELDS', token: user.token,
                 userName: user.userName, role: user.role,
-                userId: user.id
+                userId: user.userId
             })
         }
     }

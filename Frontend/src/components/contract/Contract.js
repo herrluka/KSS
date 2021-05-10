@@ -25,6 +25,7 @@ function Contract(props) {
     const [isLoaderActive, setLoaderActive] = useState(false);
     const [serverErrorOccurred, setServerErrorOccurred] = useState(false);
     const [isContentLoaded, setContentLoaded] = useState(false);
+    const [validationError, setValidationError] = useState(null);
     const contractInDialogInitialState = {
         playerId: null,
         contractDate: ''
@@ -69,13 +70,30 @@ function Contract(props) {
         })
     }
 
+    function handleShowingDialog() {
+        setDialogShown(!isDialogShown);
+        setContractInDialog(contractInDialogInitialState);
+        setValidationError(null);
+    }
+
     function saveContract() {
         setLoaderActive(true);
+        setValidationError(null);
         insertContract({
             contract_date: contractInDialog.contractDate,
             club_id: club.id,
             player_id: contractInDialog.playerId
-        }, props.token).then(response => {
+        }, props.token).then(res => {
+            if (res.response.status === 400) {
+                if (res.response.data.content.code === 2) {
+                    setValidationError("Igrač mlađi od 18 godina ne može da bude registrovan za više od 1 kluba.");
+                }
+                setLoaderActive(false);
+                return;
+            } else if (res.response.status === 500) {
+                showErrorAlert();
+                setLoaderActive(false);
+            }
             showSuccessAlert();
             setDialogShown(false);
             setContractInDialog(contractInDialogInitialState);
@@ -142,9 +160,10 @@ function Contract(props) {
                 <ContractDialog isDialogShown={isDialogShown} contract={contractInDialog}
                                 onInputChange={event => handleChange(event)}
                                 onValidateForm={() => saveContract()}
-                                closeDialog={() => setDialogShown(!isDialogShown)}
+                                closeDialog={() => handleShowingDialog()}
                                 displayedPlayers={displayedPlayersNotInClub}
-                                filterDisplayedPlayers={(searchText) => filterDisplayedPlayers(searchText)}/>
+                                filterDisplayedPlayers={(searchText) => filterDisplayedPlayers(searchText)}
+                                validationError={validationError}/>
                 <ContractHeaderAdmin clubName={club.name} openDialog={() => setDialogShown(!isDialogShown)}/>
                 <ContractsListAdmin contracts={contracts} openDeleteDialog={(contractId) => openDeleteDialog(contractId)}/>
                 <SuccessAlert alertStyle = {successAlertStyle} alertText="Angažovanje je uspešno sačuvano"/>

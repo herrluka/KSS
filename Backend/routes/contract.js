@@ -38,12 +38,14 @@ router.post('',
             if (error.parent.errno === 1452){
                 return res.status(400).json({
                     content: {
+                        code: 1,
                         message: 'Bad club or player id provided.'
                     }
                 })
             } else if (error.parent.errno === 1644) {
                 return res.status(400).json({
                     content: {
+                        code: 2,
                         message: 'Player who is younger than 18 years cannot be registered for more than one club.'
                     }
                 })
