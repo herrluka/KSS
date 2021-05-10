@@ -125,10 +125,14 @@ router.post('/',
             godina_osnivanja: req.body.foundation_year,
             adresa_kluba: req.body.address,
             broj_telefona: req.body.phone_number,
-        }).then(success => {
+        }).then(result => {
+            let newClub = result.dataValues;
+            newClub.id = result.null;
+            newClub.id = result.null;
             return res.status(201).json({
                 content: {
-                    message: 'OK'
+                    message: 'OK',
+                    club: newClub
                 }
             })
         }).catch(error => {

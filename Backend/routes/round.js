@@ -168,10 +168,13 @@ router.post('',
             datum_do: req.body.date_to,
             liga_id: req.body.league_id,
             eliminaciona_faza: req.body.eliminate_phase,
-        }).then(success => {
+        }).then(result => {
+            let newRound = result.dataValues;
+            newRound.id = result.null;
             return res.status(201).json({
                 content: {
-                    message: 'OK'
+                    message: 'OK',
+                    round: newRound
                 }
             })
         }).catch(error => {

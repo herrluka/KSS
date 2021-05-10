@@ -92,9 +92,12 @@ router.post('/register',
             lozinka: password,
             uloga: req.body.role
         }).then(result => {
+            let newUser = result.dataValues;
+            newUser.id = result.null;
             return res.status(201).json({
                 content: {
-                    message: "OK"
+                    message: "OK",
+                    user: newUser
                 }
             });
         }).catch(error => {

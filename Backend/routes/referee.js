@@ -75,10 +75,13 @@ router.post('/',
             adresa: req.body.address,
             broj_telefona: req.body.phone_number,
             najvisa_liga: req.body.league_id
-        }).then(success => {
+        }).then(result => {
+            let newReferee = result.dataValues;
+            newReferee.id = result.null;
             return res.status(201).json({
                 content: {
-                    message: 'OK'
+                    message: 'OK',
+                    referee: newReferee
                 }
             })
         }).catch(error => {

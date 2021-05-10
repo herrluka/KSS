@@ -40,10 +40,13 @@ router.post('',
             kolo_id: req.body.round_id,
             azurirao: req.body.user_updated_id,
             datum_odrzavanja: req.body.date_played
-        }).then(success => {
+        }).then(result => {
+            let newMatch = result.dataValues;
+            newMatch.id = result.null;
             return res.status(201).json({
                 content: {
-                    message: 'OK'
+                    message: 'OK',
+                    match: newMatch
                 }
             })
         }).catch(error => {

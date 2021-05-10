@@ -106,10 +106,13 @@ router.post('',
         League.create({
             naziv_lige: req.body.name,
             rang: req.body.rank
-        }).then(success => {
+        }).then(result => {
+            let newLeague = result.dataValues;
+            newLeague.id = result.null;
             return res.status(201).json({
                 content: {
-                    message: 'OK'
+                    message: 'OK',
+                    league: newLeague
                 }
             })
         }).catch(error => {

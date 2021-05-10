@@ -25,10 +25,13 @@ router.post('',
             datum_angazovanja: req.body.contract_date,
             klub_id: req.body.club_id,
             igrac_id: req.body.player_id
-        }).then(success => {
+        }).then(result => {
+            let newContract =  result.dataValues;
+            newContract.id = result.null;
             return res.status(201).json({
                 content: {
-                    message: 'OK'
+                    message: 'OK',
+                    contract: newContract
                 }
             })
         }).catch(error => {

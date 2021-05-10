@@ -95,10 +95,13 @@ router.post('/',
             prezime: req.body.surname,
             datum_rodjenja: req.body.birth_date,
             lekarski_pregled_datum: req.body.medical_examination,
-        }).then(success => {
+        }).then(result => {
+            let newPlayer = result.dataValues;
+            newPlayer.id = result.null;
             return res.status(201).json({
                 content: {
-                    message: 'OK'
+                    message: 'OK',
+                    player: newPlayer
                 }
             })
         }).catch(error => {
