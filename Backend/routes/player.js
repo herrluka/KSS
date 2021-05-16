@@ -148,6 +148,7 @@ router.put('/:playerId',
                 if (error.parent.errno === 1644) {
                     return res.status(400).json({
                         content: {
+                            code: 1,
                             message: 'Player is registered for 2 or more clubs, so he has to have more than 18 years.'
                         }
                     })

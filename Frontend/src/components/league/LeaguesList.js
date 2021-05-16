@@ -11,7 +11,7 @@ function LeaguesList(props) {
                     <Link key={league.id} to={"leagues/" + league.id} className="btn btn-dark w-75 m-1 ">
                         <div className="d-flex justify-content-between">
                             <FontAwesomeIcon className="h4 mr-2 mb-0" icon={faBasketballBall} />
-                            <span className="h4">{league.naziv_lige}</span>
+                            <span className="h4 m-0">{league.naziv_lige}</span>
                             <FontAwesomeIcon className="h4 mr-2 mb-0" icon={faBasketballBall} />
                         </div>
                     </Link>

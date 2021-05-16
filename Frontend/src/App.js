@@ -16,38 +16,14 @@ import LeagueRounds from "./components/rounds/LeagueRounds";
 import Matches from "./components/matches/Matches";
 import Clubs from "./components/clubs/Clubs";
 import Contract from "./components/contract/Contract";
-import axios from "./api/axios";
 import {connect} from "react-redux";
 
 function App(props) {
-
-    useEffect(() => {
-        const token = localStorage.getItem('Token');
-        const userName = localStorage.getItem('userName');
-        axios.get('/auth/validate-token', {headers: {authorization: 'Bearer ' + token}}).then(response => {
-            if(!response.data.content.userId) {
-                props.setAuthData({
-                    userId: null,
-                    role: null,
-                    userName: null,
-                    token: null
-                });
-            } else {
-                props.setAuthData({
-                    userId: response.data.content.userId,
-                    role: response.data.content.role,
-                    userName: userName,
-                    token: token
-                });
-            }
-        }).catch(error => {
-            props.setAuthData({
-                userId: null,
-                role: null,
-                userName: null,
-                token: null
-            })
-        });
+    props.setAuthData({
+        userId: props.userId,
+        role: props.role,
+        userName: props.userName,
+        token: props.token
     });
 
     return (

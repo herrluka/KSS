@@ -70,7 +70,6 @@ function RefereeInfo(props) {
     function confirmRefereeUpdate(event) {
         event.preventDefault();
         setButtonsDisabled(true);
-        console.log(referee)
         setErrorAlertStyle({display: "none", animation: ""});
         setSuccessAlertStyle({display: "none", animation: ""});
         setLoaderActive(true);

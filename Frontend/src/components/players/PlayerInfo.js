@@ -20,6 +20,7 @@ function PlayerInfo(props) {
     const [errorAlertStyle, setErrorAlertStyle] = useState({display: "none"});
     const [buttonsDisabled, setButtonsDisabled] = useState(false);
     const [isContentAvailable, setContentAvailable] = useState(false);
+    const [validationError, setValidationError] = useState(null);
     const params = useParams();
 
     const [player, setPlayer] = useState({
@@ -64,7 +65,16 @@ function PlayerInfo(props) {
         event.preventDefault();
         setButtonsDisabled(true);
         setLoaderActive(true);
-        updatePlayer(params.id, player, props.token).then(response => {
+        updatePlayer(params.id, player, props.token).then(res => {
+            if (res?.response?.status === 400) {
+                if (res.response.data.content.code === 1) {
+                    setValidationError("Igrač registrovan za 2 kluba ne može da bude mlađi od 18 godina");
+                }
+                setLoaderActive(false);
+                setButtonsDisabled(false);
+                return;
+            }
+            setValidationError(null);
             showSuccessAlert();
         }).catch(error => {
             showErrorAlert();
@@ -98,7 +108,6 @@ function PlayerInfo(props) {
             setLoaderActive(false);
         }).catch(error => {
             if (error.response?.status === 404) {
-                //TODO
                 history.push("/error");
             }
             setRetryButtonDisplayed(true);
@@ -143,7 +152,10 @@ function PlayerInfo(props) {
                                 <input type="date" className="form-control" id="medicalExaminationDate"
                                        name="medical_examination" value={player.medical_examination} onChange={handleChange} required />
                             </div>
-
+                            {validationError ? <div className="form-group w-25">
+                                <label className="text-danger">{validationError}</label>
+                            </div> : null
+                            }
                             <button type="submit" className="btn btn-primary" disabled={buttonsDisabled}>Sačuvaj</button>
                             <button type="button" className="btn btn-danger ml-2" disabled={buttonsDisabled} onClick={() => setDialogShown(!isDialogShown)}>Obriši</button>
                         </form>
