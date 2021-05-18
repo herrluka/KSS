@@ -1,6 +1,5 @@
 function handleDBError(res, error) {
     if (!error.parent) {
-        console.log(error);
         return res.status(500).json({
             content: {
                 message: 'Internal server error'
@@ -15,7 +14,6 @@ function handleDBError(res, error) {
             }
         })
     } else {
-        console.log(error);
         return res.status(500).json({
             content: {
                 message: "Problem with DB."

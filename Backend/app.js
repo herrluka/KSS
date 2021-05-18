@@ -61,7 +61,6 @@ app.use(function(err, req, res, next) {
   if (! err) {
     return next();
   }
-  console.log(err);
   res.status(500);
   res.send({
     content: {
