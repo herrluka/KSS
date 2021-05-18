@@ -52,8 +52,8 @@ function ChangePassword(props) {
                 history.push('/users');
             }
         }).catch(error => {
-            setServerError(true);
             setSmallLoaderShown(false);
+            setServerError(true);
         })
     }
 
@@ -67,7 +67,6 @@ function ChangePassword(props) {
             setLoaderShown(false);
             setUserFetched(true);
         }).catch(error => {
-            console.log(error)
             setServerError(true);
             setLoaderShown(false);
         })
@@ -108,7 +107,6 @@ function ChangePassword(props) {
                             <button className="btn btn-lg btn-primary btn-block" type="submit">Promenite lozinku</button>
                         </form>
                     <ModalLoader isActive={isLoaderShown} />
-                    }
                 </div>
         )}
     } else {

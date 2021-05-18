@@ -7,7 +7,7 @@ import {connect} from "react-redux";
 import roles from "../../constants";
 import RetryError from "../common/errors/RetryError";
 import ModalLoader from "../common/loaders/ModalLoader";
-import {getClubsByRoundId} from "../clubs/ClubService";
+import {getClubs} from "../clubs/ClubService";
 import {getRefereesByRoundId} from "../referees/RefereeService";
 import MatchDialog from "./MatchDialog";
 import SuccessAlert from "../alerts/SuccessAlert";
@@ -30,7 +30,7 @@ function Matches(props) {
     const [isDialogShown, setDialogShown] = useState(false);
     const [dialogMode, setDialogMode] = useState(null);
     const [isDeleteDialogShown, setDeleteDialogShown] = useState(false);
-    const [matchInDialog, setMatchInDialog] = useState({
+    const matchInDialogInitialState = {
         id: null,
         homeTeam: '',
         guestTeam: '',
@@ -40,7 +40,8 @@ function Matches(props) {
         secondRefereeId: '',
         matchDate: '',
         postponed: false,
-    });
+    };
+    const [matchInDialog, setMatchInDialog] = useState(matchInDialogInitialState);
     const [round, setRound] = useState({
         id: null,
         roundName: '',
@@ -137,7 +138,7 @@ function Matches(props) {
     }
 
     function retryGettingData() {
-        if (matches.length === 0) {
+        if (round.id === null) {
             fetchData();
         }
 
@@ -153,7 +154,7 @@ function Matches(props) {
     }
 
     function fetchClubs() {
-        getClubsByRoundId(params.id, props.token).then(response => {
+        getClubs(params.id, props.token).then(response => {
             setExistingClubs(response.data.content);
             setHomeTeamChoices(response.data.content);
             setGuestTeamChoices(response.data.content);
@@ -187,7 +188,7 @@ function Matches(props) {
                 isPostponed: matchInDialog.postponed,
                 first_referee_id: matchInDialog.firstRefereeId===''?null:matchInDialog.firstRefereeId,
                 second_referee_id: matchInDialog.secondRefereeId===''?null:matchInDialog.secondRefereeId,
-            }, props.token).then(response => {
+            }, props.token).then(res => {
                 showSuccessAlert();
                 setDialogShown(false);
                 fetchData();
@@ -243,6 +244,12 @@ function Matches(props) {
         })
     }
 
+    function handleOpenCreateDialog() {
+        setMatchInDialog(matchInDialogInitialState);
+        setDialogShown(true);
+        setDialogMode('CREATE');
+    }
+
     function handleOpenEditDialog(matchId, matchHomeTeam, matchGuestTeam, homeTeamPoints, guestTeamPoints, firstReferee, secondReferee, user, matchDate, postponed) {
         setMatchInDialog({
             id: matchId,
@@ -278,7 +285,7 @@ function Matches(props) {
     return (
         <>
             <ModalLoader isActive={isLoaderActive} />
-            <MatchesHeader isAdmin={props.isAdmin} round={round} setDialogShownEvent={() => {setDialogShown(!isDialogShown);setDialogMode('CREATE');}}/>
+            <MatchesHeader isAdmin={props.isAdmin} round={round} setDialogShownEvent={() => handleOpenCreateDialog()}/>
             <MatchesList matches={matches} isAdmin={props.isAdmin} isDelegate={props.isDelegate}
                          handleOpenDeleteDialog={(matchId) => handleOpenDeleteDialog(matchId) }
                          handleOpenEditDialog={(matchId, matchHomeTeam, matchGuestTeam, homeTeamPoints,

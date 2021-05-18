@@ -70,7 +70,7 @@ function Register(props) {
             showSuccessAlert();
             setNewUser(newUserInitialState);
         }).catch(error => {
-            if (error.response?.status === 400) {
+            if (error.response.status === 400) {
                 setFormError("Korisničko ime već postoji");
                 return;
             }

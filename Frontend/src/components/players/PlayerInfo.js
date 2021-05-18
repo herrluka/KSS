@@ -66,20 +66,18 @@ function PlayerInfo(props) {
         setButtonsDisabled(true);
         setLoaderActive(true);
         updatePlayer(params.id, player, props.token).then(res => {
-            if (res?.response?.status === 400) {
-                if (res.response.data.content.code === 1) {
-                    setValidationError("Igrač registrovan za 2 kluba ne može da bude mlađi od 18 godina");
-                }
-                setLoaderActive(false);
-                setButtonsDisabled(false);
-                return;
-            }
             setValidationError(null);
             showSuccessAlert();
         }).catch(error => {
+            if (error.response.status === 400) {
+                if (error.response.data.content.code === 1) {
+                    setValidationError("Igrač registrovan za 2 kluba ne može da bude mlađi od 18 godina");
+                }
+            }
             showErrorAlert();
         }).finally(() => {
             setLoaderActive(false);
+            setButtonsDisabled(false);
         });
     }
 

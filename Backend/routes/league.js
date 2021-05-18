@@ -37,53 +37,76 @@ router.get('/:leagueId/rounds',
             order: ['datum_od']
         }).then(rounds => {
             if (rounds.length === 0) {
-                return res.status(404).json({
-                    content: {
-                        message: 'League with sent id not found'
+                League.findOne({
+                    where: {
+                        id: req.params.leagueId
                     }
+                }).then(league => {
+                    return res.status(200).json({
+                        content: {
+                            liga: {
+                                liga_id: league.id,
+                                naziv_lige: league.naziv_lige
+                            },
+                            kola: [],
+                            rang_lista: []
+                        }
+                    })
+                }).catch(error => {
+                    return res.status(404).json({
+                        content: {
+                            message: 'League with sent id not found'
+                        }
+                    })
                 })
+            } else {
+                let responseBody = {};
+                responseBody.liga = {
+                    liga_id: rounds[0].liga.id,
+                    naziv_lige: rounds[0].liga.naziv_lige
+                };
+                responseBody.kola = [];
+                let roundsIds = [];
+                rounds.forEach(round => {
+                    if (!round.eliminaciona_faza) {
+                        roundsIds.push(round.id);
+                    }
+                   responseBody.kola.push({
+                       id: round.id,
+                       naziv: round.naziv,
+                       datum_od: round.datum_od,
+                       datum_do: round.datum_do,
+                       eliminaciona_faza: round.eliminaciona_faza,
+                       liga_id: round.liga_id,
+                   });
+                });
+                Match.findAll({
+                    where: {
+                        kolo_id: {
+                            [Op.in]: roundsIds,
+                        }
+                    },
+                    include: [
+                        {
+                            model: Club,
+                            as: 'klub_A',
+                            attributes: ['naziv_kluba']
+                        },
+                        {
+                            model: Club,
+                            as: 'klub_B',
+                            attributes: ['naziv_kluba']
+                        }
+                    ]
+                }).then(matches => {
+                    responseBody.rang_lista = calculateWinsAndLosesForClubs(matches);
+                    return res.status(200).json({
+                        content: responseBody
+                    })
+                }).catch(error => {
+                    return handleDBError(res, error);
+                });
             }
-            let responseBody = {};
-            responseBody.liga = {
-                liga_id: rounds[0].liga.id,
-                naziv_lige: rounds[0].liga.naziv_lige
-            };
-            responseBody.kola = [];
-            let roundsIds = [];
-            rounds.forEach(round => {
-                if (!round.eliminaciona_faza) {
-                    roundsIds.push(round.id);
-                }
-               responseBody.kola.push({
-                   id: round.id,
-                   naziv: round.naziv,
-                   datum_od: round.datum_od,
-                   datum_do: round.datum_do,
-                   eliminaciona_faza: round.eliminaciona_faza,
-                   liga_id: round.liga_id,
-               });
-            });
-            Match.findAll({
-                where: {
-                    kolo_id: {
-                        [Op.in]: roundsIds,
-                    }
-                },
-                include: [
-                    {
-                        model: Club,
-                        as: 'klub_A',
-                        attributes: ['naziv_kluba']
-                    }
-                ]
-            }).then(matches => {
-                responseBody.rang_lista = calculateWinsAndLosesForClubs(matches);
-                return res.status(200).json({
-                    content: responseBody
-                })
-            }).catch(error => {
-                return handleDBError(res, error);
-            });
         }).catch(error => {
             return handleDBError(res, error);
         })
@@ -189,9 +212,14 @@ function calculateWinsAndLosesForClubs(matches) {
             loses: 0,
             total_points: 0,
             club_name: match.klub_A.naziv_kluba
+        };
+        clubsDictionary[match.tim_B_id] = {
+            wins: 0,
+            loses: 0,
+            total_points: 0,
+            club_name: match.klub_B.naziv_kluba
         }
     });
-
     matches.forEach(match => {
         if (match.tim_A_koseva > match.tim_B_koseva) {
             clubsDictionary[match.tim_A_id]['wins'] += 1;

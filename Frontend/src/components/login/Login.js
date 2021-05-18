@@ -42,7 +42,7 @@ function Login(props) {
                 history.push('/');
             }
         }).catch(error => {
-            if (error.response?.status === 400) {
+            if (error.response.status === 400) {
                 setShowError(true);
             } else {
                 setServerError(true);

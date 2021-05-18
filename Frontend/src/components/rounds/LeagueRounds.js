@@ -165,7 +165,14 @@ function LeagueRounds(props) {
             }, props.token).then(response => {
                 showSuccessAlert();
                 setEditDialogShown(false);
-                const newRoundsList = rounds.map(round => {
+                let newRoundsList;
+                if (params.id !== roundInDialog.leagueId) {
+                    newRoundsList = rounds.filter(round => {
+                        if (round.id !== roundInDialog.id)
+                            return round;
+                    });
+                } else {
+                    newRoundsList = rounds.map(round => {
                     if (round.id === roundInDialog.id) {
                         return {
                             id : roundInDialog.id,
@@ -179,6 +186,7 @@ function LeagueRounds(props) {
                         return round;
                     }
                 });
+                }
                 setRounds(newRoundsList);
                 setLoaderShown(false);
             }).catch(error => {

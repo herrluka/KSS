@@ -61,74 +61,82 @@ router.get('/:roundId/matches', (req, res) => {
         order: ['datum_odrzavanja']
     }).then(matches => {
         if (matches.length === 0) {
-            return res.status(404).json({
-                content: {
-                    message: 'Round with sent id not found'
+            Round.findOne({
+                where: {
+                    id: req.params.roundId,
+                },
+                include: {
+                    model: League,
+                    as: 'liga',
+                    attributes: ['id', 'naziv_lige']
                 }
+            }).then(round => {
+                return res.status(200).json({
+                    content: {
+                        kolo: {
+                            kolo_id: round.id,
+                            naziv_kola: round.naziv,
+                            naziv_lige: round.liga.naziv_lige
+                        },
+                        utakmice: []
+                    }
+                })
+            }).catch(error => {
+                return res.status(404).json({
+                    content: {
+                        message: 'Round with sent id not found'
+                    }
+                })
+            });
+        } else {
+            let responseBody = {};
+            responseBody.kolo = {
+                kolo_id: matches[0].kolo.id,
+                naziv_kola: matches[0].kolo.naziv,
+                naziv_lige: matches[0].kolo.liga.naziv_lige
+            };
+            responseBody.utakmice = [];
+            matches.forEach(match => {
+                responseBody.utakmice.push({
+                    id: match.id,
+                    tim_A_koseva: match.tim_A_koseva,
+                    tim_B_koseva: match.tim_B_koseva,
+                    odlozeno: match.odlozeno,
+                    zavrseno: match.zavrseno,
+                    prvi_sudija: match.prvi_sudija_id===null?null:{
+                        id: match.prvi_sudija?.id,
+                        ime: match.prvi_sudija?.ime,
+                        prezime: match.prvi_sudija?.prezime
+                    },
+                    drugi_sudija: match.drugi_sudija_id===null?null: {
+                        id: match.drugi_sudija?.id,
+                        ime: match.drugi_sudija?.ime,
+                        prezime: match.drugi_sudija?.prezime
+                    },
+                    korisnik: match.azurirao===null?null: {
+                        id: match.korisnik?.id,
+                        ime: match.korisnik?.ime,
+                        prezime: match.korisnik?.prezime
+                    },
+                    klub_A: match.tim_A_id===null?null:{
+                        id: match.klub_A?.id,
+                        ime: match.klub_A?.naziv_kluba
+                    },
+                    klub_B: match.tim_B_id===null?null:{
+                        id: match.klub_B?.id,
+                        ime: match.klub_B?.naziv_kluba
+                    },
+                    datum_odrzavanja: match.datum_odrzavanja
+                });
+            });
+            return res.status(200).json({
+                content: responseBody
             })
         }
-        let responseBody = {};
-        responseBody.kolo = {
-            kolo_id: matches[0].kolo.id,
-            naziv_kola: matches[0].kolo.naziv,
-            naziv_lige: matches[0].kolo.liga.naziv_lige
-        };
-        responseBody.utakmice = [];
-        matches.forEach(match => {
-            responseBody.utakmice.push({
-                id: match.id,
-                tim_A_koseva: match.tim_A_koseva,
-                tim_B_koseva: match.tim_B_koseva,
-                odlozeno: match.odlozeno,
-                zavrseno: match.zavrseno,
-                prvi_sudija: match.prvi_sudija_id===null?null:{
-                    id: match.prvi_sudija?.id,
-                    ime: match.prvi_sudija?.ime,
-                    prezime: match.prvi_sudija?.prezime
-                },
-                drugi_sudija: match.drugi_sudija_id===null?null: {
-                    id: match.drugi_sudija?.id,
-                    ime: match.drugi_sudija?.ime,
-                    prezime: match.drugi_sudija?.prezime
-                },
-                korisnik: match.azurirao===null?null: {
-                    id: match.korisnik?.id,
-                    ime: match.korisnik?.ime,
-                    prezime: match.korisnik?.prezime
-                },
-                klub_A: match.tim_A_id===null?null:{
-                    id: match.klub_A?.id,
-                    ime: match.klub_A?.naziv_kluba
-                },
-                klub_B: match.tim_B_id===null?null:{
-                    id: match.klub_B?.id,
-                    ime: match.klub_B?.naziv_kluba
-                },
-                datum_odrzavanja: match.datum_odrzavanja
-            });
-        });
-        return res.status(200).json({
-            content: responseBody
-        })
     }).catch(error => {
         return handleDBError(res, error);
     })
 });
-
-router.get('/:roundId(\\d+)/clubs',
-    (req, res) => {
-        const query = `select DISTINCT(klub.id), klub.naziv_kluba from Utakmica
-                        inner join Klub klub on Utakmica.tim_A_id = klub.id
-                        inner join Kolo kolo on Utakmica.kolo_id = kolo.id
-                        where kolo.liga_id = (select liga_id from Kolo k where k.id =` + req.params.roundId + ')';
-        sequelize.query(query, {type: Sequelize.QueryTypes.SELECT}).then(clubs => {
-            return res.status(200).json({
-                content: clubs
-            })
-        }).catch(error => {
-            return handleDBError(res, error);
-        })
-    });
 
 router.get('/:roundId(\\d+)/referees',
     (req, res) => {
@@ -171,6 +179,13 @@ router.post('',
         }).then(result => {
             let newRound = result.dataValues;
             newRound.id = result.null;
+            if (newRound.datum_od) {
+                newRound.datum_od = newRound.datum_od.toISOString().split('T')[0];
+            }
+            if (newRound.datum_do) {
+                newRound.datum_do = newRound.datum_do.toISOString().split('T')[0];
+            }
+
             return res.status(201).json({
                 content: {
                     message: 'OK',
@@ -178,7 +193,7 @@ router.post('',
                 }
             })
         }).catch(error => {
-            if (error.parent.errno === 1452){
+            if (error?.parent?.errno === 1452){
                 return res.status(400).json({
                     content: {
                         message: 'League that you have selected does not exist'

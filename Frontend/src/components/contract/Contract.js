@@ -84,21 +84,19 @@ function Contract(props) {
             club_id: club.id,
             player_id: contractInDialog.playerId
         }, props.token).then(res => {
-            if (res?.response?.status === 400) {
-                if (res.response.data.content.code === 2) {
-                    setValidationError("Igrač mlađi od 18 godina ne može da bude registrovan za više od 1 kluba.");
-                }
-                setLoaderActive(false);
-                return;
-            } else if (res?.response?.status === 500) {
-                showErrorAlert();
-                setLoaderActive(false);
-            }
             showSuccessAlert();
             setDialogShown(false);
             setContractInDialog(contractInDialogInitialState);
             fetchData();
         }).catch(error => {
+            if (error.response.status === 400) {
+                if (error.response.data.content.code === 2) {
+                    setValidationError("Igrač mlađi od 18 godina ne može da bude registrovan za više od 1 kluba.");
+                }
+            } else if (error.response.status === 500) {
+                setServerErrorOccurred(true);
+                setLoaderActive(false);
+            }
             showErrorAlert();
             setLoaderActive(false);
         })

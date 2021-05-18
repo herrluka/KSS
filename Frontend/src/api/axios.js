@@ -13,7 +13,7 @@ instance.interceptors.response.use(response => {
     } else if (error.response.status === 404) {
         window.location.href = '/error';
     }
-    return error;
+    return Promise.reject(error);
 });
 
 export default instance;
