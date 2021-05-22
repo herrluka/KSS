@@ -92,6 +92,8 @@ function Contract(props) {
             if (error.response.status === 400) {
                 if (error.response.data.content.code === 2) {
                     setValidationError("Igrač mlađi od 18 godina ne može da bude registrovan za više od 1 kluba.");
+                } else if (error.response.data.content.code === 3) {
+                    setValidationError("Ugovor već postoji.")
                 }
             } else if (error.response.status === 500) {
                 setServerErrorOccurred(true);

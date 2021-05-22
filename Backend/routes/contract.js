@@ -49,6 +49,13 @@ router.post('',
                         message: 'Player who is younger than 18 years cannot be registered for more than one club.'
                     }
                 })
+            } else if (error.parent.errno === 1602) {
+                return res.status(400).json({
+                    content: {
+                        code: 3,
+                        message: 'Contract already exists'
+                    }
+                })
             }
             return handleDBError(res, error);
         })
