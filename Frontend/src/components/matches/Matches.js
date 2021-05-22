@@ -251,6 +251,10 @@ function Matches(props) {
     }
 
     function handleOpenEditDialog(matchId, matchHomeTeam, matchGuestTeam, homeTeamPoints, guestTeamPoints, firstReferee, secondReferee, user, matchDate, postponed) {
+        setFirstRefereeChoices(compatibleReferees.filter(referee => referee.id !== secondReferee?.id));
+        setSecondRefereeChoices(compatibleReferees.filter(referee => referee.id !== firstReferee?.id));
+        setHomeTeamChoices(existingClubs.filter(team => team.id !== matchGuestTeam?.id));
+        setGuestTeamChoices(existingClubs.filter(team => team.id !== matchHomeTeam?.id));
         setMatchInDialog({
             id: matchId,
             homeTeam: matchHomeTeam?.id,

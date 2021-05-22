@@ -219,7 +219,7 @@ function Clubs(props) {
                             onValidateForm={event => handleDialogValidation(event)}/>
                 <DeleteDialog isDialogShown={isDeleteDialogShown}
                                closeDialog={() => setDeleteDialogShown(!isDeleteDialogShown)}
-                whatToDelete="korisnika"
+                whatToDelete="klub"
                 confirmDelete={() => deleteExistingClub(deleteDialogCLubId)}/>
                 <SuccessAlert alertStyle={successAlertStyle} alertText="Uspešno ažuriran klub!" />
                 <ErrorAlert alertStyle={errorAlertStyle} alertText="Klub nije ažuriran!" />
