@@ -9,11 +9,10 @@ import RoundsList from "./RoundsList";
 import RoundsListAdmin from "./RoundsListAdmin";
 import RoundDialog from "./RoundDialog";
 import {getAllLeagues} from "../league/LeagueService";
-import SuccessAlert from "../alerts/SuccessAlert";
-import ErrorAlert from "../alerts/ErrorAlert";
 import DeleteDialog from "../common/dialogs/DeleteDialog";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPlusSquare} from "@fortawesome/free-solid-svg-icons";
+import {createErrorAlert, createSuccessAlert} from "../../alertHelper";
 
 
 function LeagueRounds(props) {
@@ -41,8 +40,6 @@ function LeagueRounds(props) {
         leagueId: ''
     };
     const [roundInDialog, setRoundInDialog] = useState(roundInitialState);
-    const [successAlertStyle, setSuccessAlertStyle] = useState({display: "none"});
-    const [errorAlertStyle, setErrorAlertStyle] = useState({display: "none"});
     const [roundIdInDeleteDialog, setRoundIdInDeleteDialog] = useState(null);
 
     function fetchData() {
@@ -132,26 +129,6 @@ function LeagueRounds(props) {
         setRoundIdInDeleteDialog(roundId);
     }
 
-    function showSuccessAlert() {
-        setSuccessAlertStyle({display: "block", animation: "slideToLeft 2s", zIndex: "1300"});
-        setTimeout(() => {
-            setSuccessAlertStyle({display: "block", animation: "slideToRight 2s", zIndex: "1300"});
-            setTimeout(() => {
-                setSuccessAlertStyle({display: "none"});
-            }, 500);
-        }, 3000);
-    }
-
-    function showErrorAlert() {
-        setErrorAlertStyle({display: "block", animation: "slideToLeft 0.5s", zIndex: "1300"});
-        setTimeout(() => {
-            setErrorAlertStyle({display: "block", animation: "slideToRight 0.5s", zIndex: "1300"});
-            setTimeout(() => {
-                setErrorAlertStyle({display: "none"});
-            }, 500);
-        }, 3000);
-    }
-
     function handleUpdateRound(event) {
         event.preventDefault();
         setLoaderShown(true);
@@ -163,7 +140,7 @@ function LeagueRounds(props) {
                 eliminate_phase: roundInDialog.eliminatePhase,
                 league_id: roundInDialog.leagueId,
             }, props.token).then(response => {
-                showSuccessAlert();
+                createSuccessAlert("Kolo ažurirano");
                 setEditDialogShown(false);
                 let newRoundsList;
                 if (params.id !== roundInDialog.leagueId) {
@@ -190,7 +167,7 @@ function LeagueRounds(props) {
                 setRounds(newRoundsList);
                 setLoaderShown(false);
             }).catch(error => {
-                showErrorAlert();
+                createErrorAlert("Kolo nije ažurirano");
                 setLoaderShown(false);
             })
         } else if (editDialogMode === 'CREATE') {
@@ -201,7 +178,7 @@ function LeagueRounds(props) {
                 eliminate_phase: roundInDialog.eliminatePhase,
                 league_id: params.id,
             }, props.token).then(response => {
-                showSuccessAlert();
+                createSuccessAlert("Kolo je sačuvano");
                 setEditDialogShown(false);
                 setRounds([
                     ...rounds,
@@ -209,7 +186,7 @@ function LeagueRounds(props) {
                 ]);
                 setLoaderShown(false);
             }).catch(error => {
-                showErrorAlert();
+                createErrorAlert("Kolo nije sačuvano");
                 setLoaderShown(false);
             })
         }
@@ -218,12 +195,12 @@ function LeagueRounds(props) {
     function handleDeleteRound() {
         setLoaderShown(true);
         deleteRound(roundIdInDeleteDialog, props.token).then(response => {
-            showSuccessAlert();
+            createSuccessAlert("Kolo je obrisano");
             setRounds(rounds.filter(round => round.id !== roundIdInDeleteDialog));
             setDeleteDialogShown(false);
             setLoaderShown(false);
         }).catch(error => {
-            showErrorAlert();
+            createErrorAlert("Kolo nije obrisano");
             setLoaderShown(false);
         })
     }
@@ -290,8 +267,6 @@ function LeagueRounds(props) {
                                         onCheckBoxChange={() => handleCheckBoxChange()}
                                         mode={editDialogMode}/>
             :null}
-            {props.isAdmin?<SuccessAlert alertStyle={successAlertStyle} alertText="Kolo je ažurirano" />:null}
-            {props.isAdmin?<ErrorAlert alertStyle={errorAlertStyle} alertText="Kolo nije ažurirano" />:null}
             {props.isAdmin?<DeleteDialog
                 whatToDelete="kolo"
                 isDialogShown={isDeleteDialogShown}

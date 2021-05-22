@@ -6,14 +6,12 @@ import roles from "../../constants";
 import {connect} from "react-redux";
 import ClubDialog from "./ClubDialog";
 import DeleteDialog from "../common/dialogs/DeleteDialog";
-import SuccessAlert from "../alerts/SuccessAlert";
-import ErrorAlert from "../alerts/ErrorAlert";
 import ClubsListForAdmin from "./ClubsListForAdmin";
 import ClubHeader from "./ClubHeader";
 import ClubHeaderForAdmin from "./ClubHeaderForAdmin";
 import ClubsList from "./ClubsList";
 import SearchWithoutButton from "../common/search/SearchWithoutButton";
-
+import {createSuccessAlert, createErrorAlert} from "../../alertHelper";
 
 function Clubs(props) {
 
@@ -34,9 +32,7 @@ function Clubs(props) {
         phone: '',
     };
     const [clubInDialog, setClubInDialog] = useState(clubDialogInitialState);
-    const [successAlertStyle, setSuccessAlertStyle] = useState({display: "none"});
-    const [errorAlertStyle, setErrorAlertStyle] = useState({display: "none"});
-    
+
     function fetchData() {
         getClubs(props.token).then(response => {
             setClubs(response.data.content);
@@ -91,25 +87,6 @@ function Clubs(props) {
         setDeleteDialogShown(!isDeleteDialogShown);
     }
 
-    function showSuccessAlert() {
-        setSuccessAlertStyle({display: "block", animation: "slideToLeft 2s", zIndex: "1300"});
-        setTimeout(() => {
-            setSuccessAlertStyle({display: "block", animation: "slideToRight 2s", zIndex: "1300"});
-            setTimeout(() => {
-                setSuccessAlertStyle({display: "none"});
-            }, 500);
-        }, 3000);
-    }
-
-    function showErrorAlert() {
-        setErrorAlertStyle({display: "block", animation: "slideToLeft 0.5s", zIndex: "1300"});
-        setTimeout(() => {
-            setErrorAlertStyle({display: "block", animation: "slideToRight 0.5s", zIndex: "1300"});
-            setTimeout(() => {
-                setErrorAlertStyle({display: "none"});
-            }, 500);
-        }, 3000);
-    }
 
     function insertExistingClub(event) {
         saveCLub({
@@ -119,7 +96,7 @@ function Clubs(props) {
             phone_number: clubInDialog.phone,
         }, props.token).then(response => {
             setDialogShown(false);
-            showSuccessAlert();
+            createSuccessAlert("Klub je sačuvan");
             setClubs([
                 ...clubs,
                 response.data.content.club
@@ -129,7 +106,7 @@ function Clubs(props) {
                 response.data.content.club
             ]);
         }).catch(error => {
-            showErrorAlert();
+            createErrorAlert("Klub nije sačuvan");
         }).finally(() => {
             setLoaderActive(false);
         })
@@ -144,7 +121,7 @@ function Clubs(props) {
             phone_number: clubInDialog.phone,
         }, props.token).then(response => {
             setDialogShown(false);
-            showSuccessAlert();
+            createSuccessAlert("Klub je ažuriran");
             const updatedClubs = clubs.map(club => {
                 if (club.id === clubInDialog.id) {
                     return {
@@ -161,7 +138,7 @@ function Clubs(props) {
             setClubs(updatedClubs);
             setShownClubs(updatedClubs);
         }).catch(error => {
-            showErrorAlert();
+            createErrorAlert("Klub nije ažuriran");
         }).finally(() => {
             setLoaderActive(false);
         })
@@ -180,13 +157,13 @@ function Clubs(props) {
     function deleteExistingClub(id) {
         setLoaderActive(true);
         deleteClub(id, props.token).then(response => {
-            showSuccessAlert();
+            createSuccessAlert("Klub je obrisan");
             setDeleteDialogShown(false);
             const updatedClubs = clubs.filter(club => club.id !== id);
             setClubs(updatedClubs);
             setShownClubs(updatedClubs);
         }).catch(error => {
-            showErrorAlert();
+            createErrorAlert("Klub nije obrisan");
         }).finally(() => {
             setLoaderActive(false);
         });
@@ -221,8 +198,6 @@ function Clubs(props) {
                                closeDialog={() => setDeleteDialogShown(!isDeleteDialogShown)}
                 whatToDelete="klub"
                 confirmDelete={() => deleteExistingClub(deleteDialogCLubId)}/>
-                <SuccessAlert alertStyle={successAlertStyle} alertText="Uspešno ažuriran klub!" />
-                <ErrorAlert alertStyle={errorAlertStyle} alertText="Klub nije ažuriran!" />
             </>
         )
     } else {

@@ -4,13 +4,12 @@ import ModalLoader from "../common/loaders/ModalLoader";
 import RetryError from "../common/errors/RetryError";
 import CreatePlayerDialog from "./CreatePlayerDialog";
 import {getPlayersByName, insertNewPlayer} from "./PlayerService";
-import SuccessAlert from "../alerts/SuccessAlert";
-import ErrorAlert from "../alerts/ErrorAlert";
 import {connect} from "react-redux";
 import roles from "../../constants"
 import PlayersList from "./PlayersList";
 import PlayerHeaderAdmin from "./PlayerHeaderAdmin";
 import PlayerHeader from "./PlayerHeader";
+import {createSuccessAlert, createErrorAlert} from "../../alertHelper";
 
 function Players(props) {
 
@@ -20,34 +19,12 @@ function Players(props) {
     const [isContentLoaded, setContentLoaded] = useState(false);
     const [serverErrorOccurred, setServerErrorOccurred] = useState(false);
     const [isDialogShown, setDialogShown] = useState(false);
-    const [successAlertStyle, setSuccessAlertStyle] = useState({display: "none"});
-    const [errorAlertStyle, setErrorAlertStyle] = useState({display: "none"});
     const [newPlayer, setNewPlayer] = useState({
         name: "",
         surname: "",
         birth_date: "",
         medical_examination: ""
     });
-
-    function showSuccessAlert() {
-        setSuccessAlertStyle({display: "block", animation: "slideToLeft 2s"});
-        setTimeout(() => {
-            setSuccessAlertStyle({display: "block", animation: "slideToRight 2s"});
-            setTimeout(() => {
-                setSuccessAlertStyle({display: "none"});
-            }, 500);
-        }, 3000);
-    }
-
-    function showErrorAlert() {
-        setErrorAlertStyle({display: "block", animation: "slideToLeft 0.5s", zIndex: "1300"});
-        setTimeout(() => {
-            setErrorAlertStyle({display: "block", animation: "slideToRight 0.5s", zIndex: "1300"});
-            setTimeout(() => {
-                setErrorAlertStyle({display: "none"});
-            }, 500);
-        }, 3000);
-    }
 
     function handleChange(event) {
         setNewPlayer({
@@ -66,7 +43,7 @@ function Players(props) {
             medical_examination: newPlayer.medical_examination!==''?newPlayer.medical_examination:null
         }, props.token).then(response => {
             setDialogShown(false);
-            showSuccessAlert();
+            createSuccessAlert("Igrač sačuvan");
             setNewPlayer({
                 ...newPlayer,
                 name: "",
@@ -76,7 +53,7 @@ function Players(props) {
             });
             setPlayers([]);
         }).catch(error => {
-            showErrorAlert();
+            createErrorAlert("Igrač nije sačuvan");
         }).finally(() => {
             setLoaderActive(false);
         })
@@ -114,8 +91,6 @@ function Players(props) {
                     <CreatePlayerDialog isDialogShown={isDialogShown} closeDialog={() => setDialogShown(!isDialogShown)}
                                         onInputChange={(event) => handleChange(event)}
                                         onValidateForm={(event) => saveNewPlayer(event)} player={newPlayer}/>
-                    < SuccessAlert alertStyle = {successAlertStyle} alertText="Igrač je uspešno sačuvan"/>
-                    <ErrorAlert alertStyle={errorAlertStyle} alertText="Igrač nije sačuvan" />
                 </>:
                 null
             }

@@ -2,10 +2,9 @@ import roles from "../../constants";
 import {useEffect, useState} from "react";
 import {saveUser} from "../users/UserService";
 import ModalLoader from "../common/loaders/ModalLoader";
-import SuccessAlert from "../alerts/SuccessAlert";
-import ErrorAlert from "../alerts/ErrorAlert";
 import {connect} from "react-redux";
 import {Redirect} from "react-router-dom";
+import {createErrorAlert, createSuccessAlert} from "../../alertHelper";
 
 function Register(props) {
     const newUserInitialState = {
@@ -19,30 +18,8 @@ function Register(props) {
     const [availableRoles, setAvailableRoles] = useState([]);
     const [isLoaderActive, setLoaderActive] = useState(false);
     const [newUser, setNewUser] = useState(newUserInitialState);
-    const [successAlertStyle, setSuccessAlertStyle] = useState({display: "none"});
-    const [errorAlertStyle, setErrorAlertStyle] = useState({display: "none"});
     const [formError, setFormError] = useState(null);
     const [buttonDisabled, setButtonDisabled] = useState(false);
-
-    function showSuccessAlert() {
-        setSuccessAlertStyle({display: "block", animation: "slideToLeft 2s", zIndex: "1300"});
-        setTimeout(() => {
-            setSuccessAlertStyle({display: "block", animation: "slideToRight 2s", zIndex: "1300"});
-            setTimeout(() => {
-                setSuccessAlertStyle({display: "none"});
-            }, 500);
-        }, 3000);
-    }
-
-    function showErrorAlert() {
-        setErrorAlertStyle({display: "block", animation: "slideToLeft 0.5s", zIndex: "1300"});
-        setTimeout(() => {
-            setErrorAlertStyle({display: "block", animation: "slideToRight 0.5s", zIndex: "1300"});
-            setTimeout(() => {
-                setErrorAlertStyle({display: "none"});
-            }, 500);
-        }, 3000);
-    }
 
     function handleChange(event) {
         setNewUser({
@@ -67,14 +44,14 @@ function Register(props) {
             password: newUser.password,
             role: newUser.role
         }, props.token).then(response => {
-            showSuccessAlert();
+            createSuccessAlert("Korisnik sačuvan");
             setNewUser(newUserInitialState);
         }).catch(error => {
             if (error.response.status === 400) {
                 setFormError("Korisničko ime već postoji");
                 return;
             }
-            showErrorAlert();
+            createErrorAlert("Korisnik nije sačuvan")
         }).finally(() => {
             setLoaderActive(false);
             setButtonDisabled(false);
@@ -126,8 +103,6 @@ function Register(props) {
                     {formError?<label className="text-danger">{formError}</label>:null}
                     <button className="btn btn-lg btn-primary btn-block" type="submit" disabled={buttonDisabled}>Registruj</button>
                 </form>
-                <SuccessAlert alertStyle={successAlertStyle} alertText="Korisnik je kreiran" />
-                <ErrorAlert alertStyle={errorAlertStyle} alertText="Korisnik nije kreiran" />
             </div>
         )
     } else {

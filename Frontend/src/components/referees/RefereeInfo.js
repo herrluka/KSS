@@ -4,11 +4,10 @@ import ModalLoader from "../common/loaders/ModalLoader";
 import RetryError from "../common/errors/RetryError";
 import {getRefereeById, updateReferee, deleteReferee} from "./RefereeService";
 import DeleteDialog from "../common/dialogs/DeleteDialog";
-import SuccessAlert from "../alerts/SuccessAlert";
-import ErrorAlert from "../alerts/ErrorAlert";
 import {connect} from "react-redux";
 import roles from "../../constants";
 import {getAllLeagues} from "../league/LeagueService";
+import {createErrorAlert, createSuccessAlert} from "../../alertHelper";
 
 
 function RefereeInfo(props) {
@@ -18,8 +17,6 @@ function RefereeInfo(props) {
     const [existingLeagues, setExistingLeagues] = useState([]);
     const [serverErrorOccurred, setServerErrorOccurred] = useState(false);
     const [isDialogShown, setDialogShown] = useState(false);
-    const [successAlertStyle, setSuccessAlertStyle] = useState({display: "none"});
-    const [errorAlertStyle, setErrorAlertStyle] = useState({display: "none"});
     const [buttonsDisabled, setButtonsDisabled] = useState(false);
     const [isContentAvailable, setContentAvailable] = useState(false);
     const params = useParams();
@@ -45,38 +42,14 @@ function RefereeInfo(props) {
         })
     }
 
-    function showSuccessAlert() {
-        setSuccessAlertStyle({display: "block", animation: "slideToLeft 2s", zIndex: "1300"});
-        setTimeout(() => {
-            setSuccessAlertStyle({display: "block", animation: "slideToRight 2s", zIndex: "1300"});
-            setTimeout(() => {
-                setSuccessAlertStyle({display: "none"});
-                setButtonsDisabled(false);
-            }, 500);
-        }, 3000);
-    }
-
-    function showErrorAlert() {
-        setErrorAlertStyle({display: "block", animation: "slideToLeft 0.5s", zIndex: "1300"});
-        setTimeout(() => {
-            setErrorAlertStyle({display: "block", animation: "slideToRight 0.5s", zIndex: "1300"});
-            setTimeout(() => {
-                setErrorAlertStyle({display: "none"});
-                setButtonsDisabled(false);
-            }, 500);
-        }, 3000);
-    }
-
     function confirmRefereeUpdate(event) {
         event.preventDefault();
         setButtonsDisabled(true);
-        setErrorAlertStyle({display: "none", animation: ""});
-        setSuccessAlertStyle({display: "none", animation: ""});
         setLoaderActive(true);
         updateReferee(params.id, referee, props.token).then(response => {
-            showSuccessAlert();
+            createSuccessAlert("Sudija ažuriran");
         }).catch(error => {
-            showErrorAlert();
+            createErrorAlert("Sudija nije ažuriran");
         }).finally(() => {
             setLoaderActive(false);
             setButtonsDisabled(false);
@@ -89,7 +62,7 @@ function RefereeInfo(props) {
             history.push("/referees");
         }).catch(() => {
             setLoaderActive(false);
-            showErrorAlert();
+            createErrorAlert("Sudija nije ažuriran");
         })
     }
 
@@ -188,8 +161,6 @@ function RefereeInfo(props) {
                             <button type="button" className="btn btn-danger ml-2" disabled={buttonsDisabled} onClick={() => setDialogShown(!isDialogShown)}>Obriši</button>
                         </form>
                     </div>
-                    <SuccessAlert alertStyle={successAlertStyle} alertText="Sudija je ažuriran" />
-                    <ErrorAlert alertStyle={errorAlertStyle} alertText="Sudija nije ažuriran" />
                 </>
             )} else {
                 return <ModalLoader isActive={isLoaderActive} />

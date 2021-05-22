@@ -17,6 +17,7 @@ import Matches from "./components/matches/Matches";
 import Clubs from "./components/clubs/Clubs";
 import Contract from "./components/contract/Contract";
 import {connect} from "react-redux";
+import AlertsContainer from "./components/alerts/AlertsContainer";
 
 function App(props) {
     props.setAuthData({
@@ -46,6 +47,7 @@ function App(props) {
             <Route path="/" exact component={HomePage} />
             <Route component={NotFoundPage} />
         </Switch>
+        <AlertsContainer />
     </>
     )
 }

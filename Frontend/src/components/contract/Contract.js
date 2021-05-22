@@ -2,8 +2,6 @@ import {getPlayersThatPlayInClub, insertContract, deleteContract} from "./Contra
 import {useEffect, useState} from "react";
 import {useParams} from 'react-router-dom';
 import ContractDialog from "./ContractDialog";
-import SuccessAlert from "../alerts/SuccessAlert";
-import ErrorAlert from "../alerts/ErrorAlert";
 import ModalLoader from "../common/loaders/ModalLoader";
 import {connect} from "react-redux";
 import ContractHeader from "./ContractHeader";
@@ -13,6 +11,7 @@ import ContractsListAdmin from "./ContractsListAdmin";
 import DeleteDialog from "../common/dialogs/DeleteDialog";
 import roles from "../../constants";
 import RetryError from "../common/errors/RetryError";
+import {createSuccessAlert, createErrorAlert} from "../../alertHelper";
 
 let contractIdToDelete =null;
 function Contract(props) {
@@ -35,32 +34,10 @@ function Contract(props) {
         id: null,
         name: ''
     });
-    const [successAlertStyle, setSuccessAlertStyle] = useState({display: "none"});
-    const [errorAlertStyle, setErrorAlertStyle] = useState({display: "none"});
     const params = useParams();
 
     function filterDisplayedPlayers(searchText) {
         setDisplayedPlayersNotInClub(playersNotInClub.filter(player => player.ime.toLowerCase().includes(searchText)));
-    }
-
-    function showSuccessAlert() {
-        setSuccessAlertStyle({display: "block", animation: "slideToLeft 2s"});
-        setTimeout(() => {
-            setSuccessAlertStyle({display: "block", animation: "slideToRight 2s"});
-            setTimeout(() => {
-                setSuccessAlertStyle({display: "none"});
-            }, 500);
-        }, 3000);
-    }
-
-    function showErrorAlert() {
-        setErrorAlertStyle({display: "block", animation: "slideToLeft 0.5s", zIndex: "1300"});
-        setTimeout(() => {
-            setErrorAlertStyle({display: "block", animation: "slideToRight 0.5s", zIndex: "1300"});
-            setTimeout(() => {
-                setErrorAlertStyle({display: "none"});
-            }, 500);
-        }, 3000);
     }
 
     function handleChange(event) {
@@ -84,7 +61,7 @@ function Contract(props) {
             club_id: club.id,
             player_id: contractInDialog.playerId
         }, props.token).then(res => {
-            showSuccessAlert();
+            createSuccessAlert("Ugovor sačuvan");
             setDialogShown(false);
             setContractInDialog(contractInDialogInitialState);
             fetchData();
@@ -99,7 +76,7 @@ function Contract(props) {
                 setServerErrorOccurred(true);
                 setLoaderActive(false);
             }
-            showErrorAlert();
+            createErrorAlert("Ugovor nije sačuvan");
             setLoaderActive(false);
         })
     }
@@ -113,10 +90,10 @@ function Contract(props) {
         setLoaderActive(true);
         deleteContract(contractIdToDelete, props.token).then(response => {
             setDeleteDialogShown(false);
-            showSuccessAlert();
+            createSuccessAlert("Ugovor obrisan");
             fetchData();
         }).catch(error => {
-            showErrorAlert();
+            createErrorAlert("Ugovor nije obrisan");
             setLoaderActive(false);
         })
     }
@@ -166,8 +143,6 @@ function Contract(props) {
                                 validationError={validationError}/>
                 <ContractHeaderAdmin clubName={club.name} openDialog={() => setDialogShown(!isDialogShown)}/>
                 <ContractsListAdmin contracts={contracts} openDeleteDialog={(contractId) => openDeleteDialog(contractId)}/>
-                <SuccessAlert alertStyle = {successAlertStyle} alertText="Angažovanje je uspešno sačuvano"/>
-                <ErrorAlert alertStyle={errorAlertStyle} alertText="Angažovanje nije sačuvano" />
             </>
         )
     } else {

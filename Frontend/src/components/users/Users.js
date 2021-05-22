@@ -7,10 +7,9 @@ import roles from "../../constants";
 import {connect} from "react-redux";
 import UserDialog from "./UserDialog";
 import DeleteDialog from "../common/dialogs/DeleteDialog";
-import SuccessAlert from "../alerts/SuccessAlert";
-import ErrorAlert from "../alerts/ErrorAlert";
 import UsersList from "./UsersList";
 import UserHeader from "./UserHeader";
+import {createErrorAlert, createSuccessAlert} from "../../alertHelper";
 
 
 function Users(props) {
@@ -28,9 +27,7 @@ function Users(props) {
         userName: '',
         role: '',
     });
-    const [successAlertStyle, setSuccessAlertStyle] = useState({display: "none"});
-    const [errorAlertStyle, setErrorAlertStyle] = useState({display: "none"});
-    
+
     function fetchData() {
         getUsers(props.token).then(response => {
             setUsers(response.data.content);
@@ -76,26 +73,6 @@ function Users(props) {
         setDeleteDialogShown(!isDeleteDialogShown);
     }
 
-    function showSuccessAlert() {
-        setSuccessAlertStyle({display: "block", animation: "slideToLeft 2s", zIndex: "1300"});
-        setTimeout(() => {
-            setSuccessAlertStyle({display: "block", animation: "slideToRight 2s", zIndex: "1300"});
-            setTimeout(() => {
-                setSuccessAlertStyle({display: "none"});
-            }, 500);
-        }, 3000);
-    }
-
-    function showErrorAlert() {
-        setErrorAlertStyle({display: "block", animation: "slideToLeft 0.5s", zIndex: "1300"});
-        setTimeout(() => {
-            setErrorAlertStyle({display: "block", animation: "slideToRight 0.5s", zIndex: "1300"});
-            setTimeout(() => {
-                setErrorAlertStyle({display: "none"});
-            }, 500);
-        }, 3000);
-    }
-
     function updateExistingUser(event) {
         event.preventDefault();
         setLoaderActive(true);
@@ -105,10 +82,10 @@ function Users(props) {
             role: userInDialog.role
         }, props.token).then(response => {
             setDialogShown(false);
-            showSuccessAlert();
+            createSuccessAlert("Korisnik ažuriran");
             fetchData();
         }).catch(error => {
-            showErrorAlert();
+            createErrorAlert("Korisnik nije ažuriran");
         }).finally(() => {
             setLoaderActive(false);
         })
@@ -117,11 +94,11 @@ function Users(props) {
     function deleteExistingUser(id) {
         setLoaderActive(true);
         deleteUser(id, props.token).then(response => {
-            showSuccessAlert();
+            createSuccessAlert("Korisnik je obrisan");
             setDeleteDialogShown(false);
             fetchData();
         }).catch(error => {
-            showErrorAlert();
+            createErrorAlert("Korisnik nije obrisan")
         }).finally(() => {
             setLoaderActive(false);
         });
@@ -153,8 +130,6 @@ function Users(props) {
                            closeDialog={() => setDeleteDialogShown(!isDeleteDialogShown)}
             whatToDelete="korisnika"
             confirmDelete={() => deleteExistingUser(deleteDialogUserId)}/>
-            <SuccessAlert alertStyle={successAlertStyle} alertText="Uspešno ažuriran korisnik!" />
-            <ErrorAlert alertStyle={errorAlertStyle} alertText="Korisnik nije ažuriran!" />
         </>
     )
 }

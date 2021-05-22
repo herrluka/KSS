@@ -6,12 +6,11 @@ import roles from "../../constants";
 import {connect} from "react-redux";
 import LeagueDialog from "./LeagueDialog";
 import DeleteDialog from "../common/dialogs/DeleteDialog";
-import SuccessAlert from "../alerts/SuccessAlert";
-import ErrorAlert from "../alerts/ErrorAlert";
 import LeaguesListForAdmin from "./LeaguesListForAdmin";
 import LeaguesHeaderForAdmin from "./LeaguesHeaderForAdmin";
 import LeaguesHeader from "./LeaguesHeader";
 import LeaguesList from "./LeaguesList";
+import {createSuccessAlert, createErrorAlert} from "../../alertHelper";
 
 
 function League(props) {
@@ -29,8 +28,6 @@ function League(props) {
         rank: ''
     });
     const [dialogMode, setDialogMode] = useState('');
-    const [successAlertStyle, setSuccessAlertStyle] = useState({display: "none"});
-    const [errorAlertStyle, setErrorAlertStyle] = useState({display: "none"});
 
     function fetchData() {
         getAllLeagues().then(_leagues => {
@@ -85,38 +82,18 @@ function League(props) {
         setDeleteDialogShown(!isDeleteDialogShown);
     }
 
-    function showSuccessAlert() {
-        setSuccessAlertStyle({display: "block", animation: "slideToLeft 2s", zIndex: "1300"});
-        setTimeout(() => {
-            setSuccessAlertStyle({display: "block", animation: "slideToRight 2s", zIndex: "1300"});
-            setTimeout(() => {
-                setSuccessAlertStyle({display: "none"});
-            }, 500);
-        }, 3000);
-    }
-
-    function showErrorAlert() {
-        setErrorAlertStyle({display: "block", animation: "slideToLeft 0.5s", zIndex: "1300"});
-        setTimeout(() => {
-            setErrorAlertStyle({display: "block", animation: "slideToRight 0.5s", zIndex: "1300"});
-            setTimeout(() => {
-                setErrorAlertStyle({display: "none"});
-            }, 500);
-        }, 3000);
-    }
-
     function saveNewLeague(event) {
         event.preventDefault();
         setLoaderActive(true);
         createLeague(leagueInDialog, props.token).then(response => {
             setDialogShown(false);
-            showSuccessAlert();
+            createSuccessAlert("Liga sačuvana");
             setLeagues([
                 ...leagues,
                 response.data.content.league
             ])
         }).catch(error => {
-            showErrorAlert();
+            createErrorAlert("Liga nije sačuvana");
         }).finally(() => {
             setLoaderActive(false);
         });
@@ -130,10 +107,10 @@ function League(props) {
             rank: leagueInDialog.rank
         }, props.token).then(response => {
             setDialogShown(false);
-            showSuccessAlert();
+            createSuccessAlert("Liga ažurirana");
             retryGettingLeagues();
         }).catch(error => {
-            showErrorAlert();
+            createErrorAlert("Liga nije ažurirana");
         }).finally(() => {
             setLoaderActive(false);
         })
@@ -142,11 +119,11 @@ function League(props) {
     function deleteExistingLeague(id) {
         setLoaderActive(true);
         deleteLeague(id, props.token).then(response => {
-            showSuccessAlert();
+            createSuccessAlert("Liga obrisana");
             setDeleteDialogShown(false);
             retryGettingLeagues();
         }).catch(error => {
-            showErrorAlert();
+            createErrorAlert("Liga nije obrisana");
         }).finally(() => {
             setLoaderActive(false);
         });
@@ -188,8 +165,6 @@ function League(props) {
                 closeDialog={() => setDeleteDialogShown(!isDeleteDialogShown)}
                 isDialogShown={isDeleteDialogShown}
                 confirmDelete={(id) => deleteExistingLeague(id)}/>
-            <SuccessAlert alertStyle={successAlertStyle} alertText="Liga je ažurirana" />
-            <ErrorAlert alertStyle={errorAlertStyle} alertText="Liga nije ažurirana" />
         </>
     )
 

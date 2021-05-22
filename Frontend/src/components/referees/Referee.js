@@ -6,12 +6,11 @@ import ModalLoader from "../common/loaders/ModalLoader";
 import RetryError from "../common/errors/RetryError";
 import CreateRefereeDialog from "./CreateRefereeDialog";
 import {getAllLeagues} from "../league/LeagueService";
-import SuccessAlert from "../alerts/SuccessAlert";
-import ErrorAlert from "../alerts/ErrorAlert";
 import RefereeList from "./RefereeList";
 import RefereeListAdmin from "./RefereeListAdmin";
 import RefereeHeaderForAdmin from "./RefereeHeaderForAdmin";
 import RefereeHeader from "./RefereeHeader";
+import {createErrorAlert, createSuccessAlert} from "../../alertHelper";
 
 
 function Referee(props) {
@@ -31,29 +30,6 @@ function Referee(props) {
         league: "selected",
     };
     const [refereeInDialog, setRefereeInDialog] = useState(refereeInDialogInitialState);
-    const [successAlertStyle, setSuccessAlertStyle] = useState({display: "none"});
-    const [errorAlertStyle, setErrorAlertStyle] = useState({display: "none"});
-
-
-    function showSuccessAlert() {
-        setSuccessAlertStyle({display: "block", animation: "slideToLeft 2s"});
-        setTimeout(() => {
-            setSuccessAlertStyle({display: "block", animation: "slideToRight 2s"});
-            setTimeout(() => {
-                setSuccessAlertStyle({display: "none"});
-            }, 500);
-        }, 3000);
-    }
-
-    function showErrorAlert() {
-        setErrorAlertStyle({display: "block", animation: "slideToLeft 0.5s", zIndex: "1300"});
-        setTimeout(() => {
-            setErrorAlertStyle({display: "block", animation: "slideToRight 0.5s", zIndex: "1300"});
-            setTimeout(() => {
-                setErrorAlertStyle({display: "none"});
-            }, 500);
-        }, 3000);
-    }
 
     function fetchReferees() {
         getAllReferees().then(response => {
@@ -117,12 +93,12 @@ function Referee(props) {
             ...refereeInDialog,
             league_id: parseInt(refereeInDialog.league)
         }, props.token).then(response => {
-            showSuccessAlert();
+            createSuccessAlert("Sudija sačuvan");
             setDialogShown(false);
             setRefereeInDialog(refereeInDialogInitialState);
             fetchReferees();
         }).catch(error => {
-            showErrorAlert();
+            createErrorAlert("Sudija nije sačuvan")
         }).finally(() => {
             setLoaderShown(false);
         })
@@ -148,8 +124,6 @@ function Referee(props) {
                                      onValidateForm={(event) => insertNewReferee(event)}
                                      availableLeagues={existingLeagues}
                 />
-                <SuccessAlert alertStyle={successAlertStyle} alertText="Sudija je uspešno sačuvan"/>
-                <ErrorAlert alertStyle={errorAlertStyle} alertText="Sudija nije sačuvan" />
             </>
         )
     } else {

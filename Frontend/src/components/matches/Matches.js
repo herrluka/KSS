@@ -10,9 +10,8 @@ import ModalLoader from "../common/loaders/ModalLoader";
 import {getClubs} from "../clubs/ClubService";
 import {getRefereesByRoundId} from "../referees/RefereeService";
 import MatchDialog from "./MatchDialog";
-import SuccessAlert from "../alerts/SuccessAlert";
-import ErrorAlert from "../alerts/ErrorAlert";
 import DeleteDialog from "../common/dialogs/DeleteDialog";
+import {createSuccessAlert, createErrorAlert} from "../../alertHelper";
 
 let matchIdInDeleteDialog = null;
 function Matches(props) {
@@ -48,29 +47,6 @@ function Matches(props) {
         leagueName: ''
     });
     const params = useParams();
-    const [successAlertStyle, setSuccessAlertStyle] = useState({display: "none"});
-    const [errorAlertStyle, setErrorAlertStyle] = useState({display: "none"});
-
-
-    function showSuccessAlert() {
-        setSuccessAlertStyle({display: "block", animation: "slideToLeft 2s"});
-        setTimeout(() => {
-            setSuccessAlertStyle({display: "block", animation: "slideToRight 2s"});
-            setTimeout(() => {
-                setSuccessAlertStyle({display: "none"});
-            }, 500);
-        }, 3000);
-    }
-
-    function showErrorAlert() {
-        setErrorAlertStyle({display: "block", animation: "slideToLeft 0.5s", zIndex: "1300"});
-        setTimeout(() => {
-            setErrorAlertStyle({display: "block", animation: "slideToRight 0.5s", zIndex: "1300"});
-            setTimeout(() => {
-                setErrorAlertStyle({display: "none"});
-            }, 500);
-        }, 3000);
-    }
 
     function handleOpenDeleteDialog(matchId) {
         setDeleteDialogShown(true);
@@ -189,11 +165,11 @@ function Matches(props) {
                 first_referee_id: matchInDialog.firstRefereeId===''?null:matchInDialog.firstRefereeId,
                 second_referee_id: matchInDialog.secondRefereeId===''?null:matchInDialog.secondRefereeId,
             }, props.token).then(res => {
-                showSuccessAlert();
+                createSuccessAlert("Utakmica sačuvana");
                 setDialogShown(false);
                 fetchData();
             }).catch(error => {
-                showErrorAlert();
+                createErrorAlert("Utakmica nije sačuvana");
             }).finally(() => {
                 setLoaderActive(false);
             })
@@ -220,11 +196,11 @@ function Matches(props) {
                 }
             }
             updateMatch(matchInDialog.id, requestBody, props.token).then(response => {
-                showSuccessAlert();
+                createSuccessAlert("Utakmica ažurirana");
                 setDialogShown(false);
                 fetchData();
             }).catch(error => {
-                showErrorAlert();
+                createErrorAlert("Utakmica nije ažurirana");
             }).finally(() => {
                 setLoaderActive(false);
             })
@@ -234,11 +210,11 @@ function Matches(props) {
     function confirmDelete() {
         setLoaderActive(true);
         deleteMatch(matchIdInDeleteDialog, props.token).then(response => {
-            showSuccessAlert();
+            createSuccessAlert("Utakmica obrisana");
             setMatches(matches.filter(match => match.id !== matchIdInDeleteDialog));
             setDeleteDialogShown(false);
         }).catch(error => {
-            showErrorAlert();
+            createErrorAlert("Utakmica nije obrisana");
         }).finally(() => {
             setLoaderActive(false);
         })
@@ -310,8 +286,6 @@ function Matches(props) {
                          handleFirstRefereeChange={event => handleFirstRefereeChange(event)}
                          handleSecondRefereeChange={event => handleSecondRefereeChange(event)}
                          onValidateForm = {event => saveMatch(event)} closeDialog={() => setDialogShown(!isDialogShown)}/>
-            <SuccessAlert alertStyle={successAlertStyle} alertText="Utakmica je uspešno sačuvana"/>
-            <ErrorAlert alertStyle={errorAlertStyle} alertText="Utakmica nije sačuvana" />
         </>
     )
 }

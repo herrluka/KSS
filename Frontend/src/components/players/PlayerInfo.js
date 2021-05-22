@@ -4,10 +4,9 @@ import ModalLoader from "../common/loaders/ModalLoader";
 import RetryError from "../common/errors/RetryError";
 import {deletePlayer, getPlayerById, updatePlayer} from "./PlayerService";
 import DeleteDialog from "../common/dialogs/DeleteDialog";
-import SuccessAlert from "../alerts/SuccessAlert";
-import ErrorAlert from "../alerts/ErrorAlert";
 import {connect} from "react-redux";
 import roles from "../../constants";
+import {createErrorAlert, createSuccessAlert} from "../../alertHelper";
 
 
 function PlayerInfo(props) {
@@ -16,8 +15,6 @@ function PlayerInfo(props) {
     const [isLoaderActive, setLoaderActive] = useState(false);
     const [retryButtonDisplayed, setRetryButtonDisplayed] = useState(false);
     const [isDialogShown, setDialogShown] = useState(false);
-    const [successAlertStyle, setSuccessAlertStyle] = useState({display: "none"});
-    const [errorAlertStyle, setErrorAlertStyle] = useState({display: "none"});
     const [buttonsDisabled, setButtonsDisabled] = useState(false);
     const [isContentAvailable, setContentAvailable] = useState(false);
     const [validationError, setValidationError] = useState(null);
@@ -39,42 +36,20 @@ function PlayerInfo(props) {
         })
     }
 
-    function showSuccessAlert() {
-        setSuccessAlertStyle({display: "block", animation: "slideToLeft 2s", zIndex: "1300"});
-        setTimeout(() => {
-            setSuccessAlertStyle({display: "block", animation: "slideToRight 2s", zIndex: "1300"});
-            setTimeout(() => {
-                setSuccessAlertStyle({display: "none"});
-                setButtonsDisabled(false);
-            }, 500);
-        }, 3000);
-    }
-
-    function showErrorAlert() {
-        setErrorAlertStyle({display: "block", animation: "slideToLeft 0.5s", zIndex: "1300"});
-        setTimeout(() => {
-            setErrorAlertStyle({display: "block", animation: "slideToRight 0.5s", zIndex: "1300"});
-            setTimeout(() => {
-                setErrorAlertStyle({display: "none"});
-                setButtonsDisabled(false);
-            }, 500);
-        }, 3000);
-    }
-
     function confirmPlayerUpdate(event) {
         event.preventDefault();
         setButtonsDisabled(true);
         setLoaderActive(true);
         updatePlayer(params.id, player, props.token).then(res => {
             setValidationError(null);
-            showSuccessAlert();
+            createSuccessAlert("Igrač ažuriran");
         }).catch(error => {
             if (error.response.status === 400) {
                 if (error.response.data.content.code === 1) {
                     setValidationError("Igrač registrovan za 2 kluba ne može da bude mlađi od 18 godina");
                 }
             }
-            showErrorAlert();
+            createErrorAlert("Igrač nije ažuriran");
         }).finally(() => {
             setLoaderActive(false);
             setButtonsDisabled(false);
@@ -86,6 +61,7 @@ function PlayerInfo(props) {
         return deletePlayer(params.id, props.token).then(response => {
             history.push("/players");
         }).catch(() => {
+            createErrorAlert("Igrač nije ažuriran");
             setLoaderActive(false);
         })
     }
@@ -158,8 +134,6 @@ function PlayerInfo(props) {
                             <button type="button" className="btn btn-danger ml-2" disabled={buttonsDisabled} onClick={() => setDialogShown(!isDialogShown)}>Obriši</button>
                         </form>
                     </div>
-                    <SuccessAlert alertStyle={successAlertStyle} alertText="Igrač je ažuriran" />
-                    <ErrorAlert alertStyle={errorAlertStyle} alertText="Igrač nije ažuriran" />
                 </>
         )} else {
             return (
