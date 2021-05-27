@@ -172,3 +172,28 @@ code {
   margin: 0px;
 }
 
+.flag-parallax {
+   background-image: url("/src/assets/zastava.jpg");
+   height: 93vh;
+   min-height: 500px;
+   background-attachment: fixed;
+   background-position: center;
+   background-repeat: no-repeat;
+   background-size: cover;
+ }
+
+.national-team-parallax {
+  background-image: url("/src/assets/reprezentacija.jpg");
+  height: 100vh;
+  opacity: 0.6;
+  min-height: 500px;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.carousel-image {
+  height: 75%;
+}
+

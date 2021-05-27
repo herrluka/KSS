@@ -2,7 +2,10 @@ import { Link } from "react-router-dom";
 
 function InfoCards() {
     return (
-        <div className="container position-relative" style={{minHeight: "80vh"}}>
+        <div className="container position-relative my-5" style={{minHeight: "60vh"}}>
+            <div className="col-12">
+                <h1 className="text-center mb-5">Pogledajte takmičenja Košarkaškog saveza Srbije</h1>
+            </div>
             <div className="card-deck mb-3 text-center">
                 <div className="card mb-4 box-shadow">
                     <div className="card-header">
